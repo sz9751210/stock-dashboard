@@ -79,25 +79,32 @@ export function groupRelationships(topic) {
   return [...groups.entries()].map(([group, nodes]) => ({ group, nodes }));
 }
 
-export function createTopicNetwork(topic) {
+export function createTopicNetwork(topic, clusterId) {
   const network = topic.network;
   if (!network) {
-    return { clusters: [], lanes: [], edgesByType: {} };
+    return { clusters: [], activeCluster: null, lanes: [], edgesByType: {} };
   }
 
-  const laneMap = new Map(network.lanes.map((lane) => [lane.id, { ...lane, nodes: [] }]));
-  for (const node of network.nodes) {
+  const clusterViews = network.clusterViews ?? [];
+  const activeCluster =
+    clusterViews.find((cluster) => cluster.id === clusterId || cluster.label === clusterId) ??
+    clusterViews[0] ??
+    null;
+  const source = activeCluster ?? network;
+  const laneMap = new Map(source.lanes.map((lane) => [lane.id, { ...lane, nodes: [] }]));
+  for (const node of source.nodes) {
     const lane = laneMap.get(node.lane);
     if (lane) lane.nodes.push(node);
   }
 
   const edgesByType = {};
-  for (const edge of network.edges) {
+  for (const edge of source.edges) {
     edgesByType[edge.type] = (edgesByType[edge.type] ?? 0) + 1;
   }
 
   return {
-    clusters: network.clusters,
+    clusters: clusterViews.length > 0 ? clusterViews : network.clusters.map((label) => ({ id: label, label })),
+    activeCluster,
     lanes: [...laneMap.values()],
     edgesByType,
   };

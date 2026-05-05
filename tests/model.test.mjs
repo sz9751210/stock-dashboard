@@ -288,7 +288,11 @@ test("createTopicNetwork returns swimlanes, nodes, and edge types", () => {
   };
 
   assert.deepEqual(createTopicNetwork(topic), {
-    clusters: ["AI 算力主鏈", "消費與終端"],
+    clusters: [
+      { id: "AI 算力主鏈", label: "AI 算力主鏈" },
+      { id: "消費與終端", label: "消費與終端" },
+    ],
+    activeCluster: null,
     lanes: [
       {
         id: "chip",
@@ -303,4 +307,41 @@ test("createTopicNetwork returns swimlanes, nodes, and edge types", () => {
     ],
     edgesByType: { supply: 1 },
   });
+});
+
+test("createTopicNetwork can select a cluster-specific view", () => {
+  const topic = {
+    id: "ai-server-odm",
+    network: {
+      clusters: [],
+      lanes: [],
+      nodes: [],
+      edges: [],
+      clusterViews: [
+        {
+          id: "compute",
+          label: "AI 算力主鏈",
+          lanes: [{ id: "chip", label: "AI 晶片設計" }],
+          nodes: [{ id: "asic", label: "ASIC / IP 設計", lane: "chip", kind: "technology" }],
+          edges: [],
+        },
+        {
+          id: "consumer",
+          label: "消費與終端",
+          lanes: [{ id: "device", label: "AI 終端裝置" }],
+          nodes: [{ id: "ai-pc", label: "AI PC", lane: "device", kind: "supply" }],
+          edges: [{ from: "ai-pc", to: "edge-ai", type: "supply" }],
+        },
+      ],
+    },
+  };
+
+  const network = createTopicNetwork(topic, "consumer");
+
+  assert.equal(network.activeCluster.id, "consumer");
+  assert.deepEqual(
+    network.lanes.map((lane) => [lane.label, lane.nodes.map((node) => node.label)]),
+    [["AI 終端裝置", ["AI PC"]]],
+  );
+  assert.deepEqual(network.edgesByType, { supply: 1 });
 });

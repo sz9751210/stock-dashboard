@@ -35,6 +35,7 @@ const state = {
   selectedTopicId: initialTopicId ?? "",
   analysisMode: "bullish",
   mapMode: "relation",
+  activeNetworkCluster: "compute",
   user: loadJson(USER_KEY, null),
   savedAnalyses: loadJson(SAVED_ANALYSES_KEY, []),
 };
@@ -288,7 +289,8 @@ function renderMap(visibleTopics) {
     topics.find((topic) => topic.id === state.selectedTopicId) ?? visibleTopics[0];
   state.selectedTopicId = selectedTopic.id;
   const groups = groupRelationships(selectedTopic);
-  const network = createTopicNetwork(selectedTopic);
+  const network = createTopicNetwork(selectedTopic, state.activeNetworkCluster);
+  const activeClusterId = network.activeCluster?.id ?? network.clusters[0]?.id ?? "";
 
   content.innerHTML = `
     <div class="map-toolbar">
@@ -313,7 +315,15 @@ function renderMap(visibleTopics) {
       selectedTopic.network && state.mapMode === "relation"
         ? `
           <div class="network-tabs">
-            ${network.clusters.map((cluster, index) => `<button class="${index === 0 ? "active" : ""}">${cluster}</button>`).join("")}
+            ${network.clusters
+              .map(
+                (cluster) => `
+                  <button class="${cluster.id === activeClusterId ? "active" : ""}" data-network-cluster="${cluster.id}">
+                    ${cluster.label}
+                  </button>
+                `,
+              )
+              .join("")}
           </div>
           <div class="network-legend">
             <span class="legend-supply">供應關係 ${network.edgesByType.supply ?? 0}</span>
@@ -822,10 +832,18 @@ content.addEventListener("click", (event) => {
     return;
   }
 
+  const networkClusterButton = event.target.closest("[data-network-cluster]");
+  if (networkClusterButton) {
+    state.activeNetworkCluster = networkClusterButton.dataset.networkCluster;
+    render();
+    return;
+  }
+
   const button = event.target.closest("[data-topic]");
   if (!button) return;
 
   state.selectedTopicId = button.dataset.topic;
+  state.activeNetworkCluster = "compute";
   if (state.view === "map") {
     const url = new URL(window.location.href);
     url.searchParams.set("topic", state.selectedTopicId);
