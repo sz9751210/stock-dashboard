@@ -1,9 +1,17 @@
-import { activeEtfs, categories, marketSnapshots, topics } from "./data.js";
+import {
+  activeEtfMarketNote,
+  activeEtfs,
+  categories,
+  etfEdgeMeta,
+  marketSnapshots,
+  topics,
+} from "./data.js";
 import { addSavedAnalysis, createUserProfile } from "./auth.js";
 import {
   buildCompanyIndex,
   buildHeatMap,
   createAiRankingReport,
+  createDailyFocusReport,
   createEtfDashboard,
   createMarketSnapshot,
   filterCompanies,
@@ -139,6 +147,75 @@ function renderEmpty() {
     <div class="empty-state">
       <h2>沒有符合條件的資料</h2>
       <p>請調整搜尋字詞或切換分類。</p>
+    </div>
+  `;
+}
+
+function renderDailyFocus(visibleTopics) {
+  const report = createDailyFocusReport(visibleTopics, marketSnapshots, activeEtfs, etfEdgeMeta);
+
+  viewTitle.innerHTML = `
+    <div>
+      <p class="eyebrow">Daily Focus</p>
+      <h2>每日焦點</h2>
+      <p class="section-copy">盤前焦點、ETF 早報、量價訊號與風險提示。</p>
+    </div>
+  `;
+
+  content.innerHTML = `
+    <section class="focus-hero">
+      <div>
+        <span>${report.etfBrief.asOf}</span>
+        <h3>${report.lead}</h3>
+        <p>${activeEtfMarketNote.body}</p>
+      </div>
+      <div class="focus-source">
+        <strong>${report.etfBrief.sourceLabel}</strong>
+        <span>${report.etfBrief.etfCount} ETFs · ${report.etfBrief.totalAum} 億 AUM</span>
+        <span>25% 上限使用率 ${report.etfBrief.tsmcLimitUsage}%</span>
+      </div>
+    </section>
+    <div class="focus-layout">
+      <section class="focus-panel">
+        <div class="panel-kicker">Market Movers</div>
+        <h3>量價焦點</h3>
+        ${report.marketMovers
+          .map(
+            (row) => `
+              <div class="focus-row">
+                <strong>${row.ticker} ${row.name}</strong>
+                <span class="${row.changePct >= 0 ? "up-text" : "down-text"}">${row.changePct >= 0 ? "+" : ""}${row.changePct}%</span>
+                <small>${row.topicTitle} · ${row.signal}</small>
+              </div>
+            `,
+          )
+          .join("")}
+      </section>
+      <section class="focus-panel">
+        <div class="panel-kicker">ETF Morning Brief</div>
+        <h3>主動式 ETF 早報</h3>
+        <div class="brief-grid">
+          <div><span>今日流入</span><strong>${report.etfBrief.dailyInflow}</strong></div>
+          <div><span>今日流出</span><strong>${report.etfBrief.dailyOutflow}</strong></div>
+          <div><span>週資金流</span><strong>${report.etfBrief.weeklyFlow}</strong></div>
+        </div>
+        <p>${etfEdgeMeta.marketNote}</p>
+        <p>${activeEtfMarketNote.title}：${activeEtfMarketNote.body}</p>
+      </section>
+      <section class="focus-panel">
+        <div class="panel-kicker">Watch Items</div>
+        <h3>今日追蹤</h3>
+        <ul class="focus-list">
+          ${report.watchItems.map((item) => `<li>${item}</li>`).join("")}
+        </ul>
+      </section>
+      <section class="focus-panel">
+        <div class="panel-kicker">Risk Notes</div>
+        <h3>風險提示</h3>
+        <ul class="focus-list">
+          ${report.riskNotes.map((item) => `<li>${item}</li>`).join("")}
+        </ul>
+      </section>
     </div>
   `;
 }
@@ -345,6 +422,17 @@ function renderEtfs(visibleTopics) {
   `;
 
   content.innerHTML = `
+    <section class="focus-hero compact">
+      <div>
+        <span>${etfEdgeMeta.sourceLabel} · ${etfEdgeMeta.asOf}</span>
+        <h3>${etfEdgeMeta.marketNote}</h3>
+        <p>${activeEtfMarketNote.body}</p>
+      </div>
+      <div class="focus-source">
+        <strong>${activeEtfMarketNote.sourceLabel}</strong>
+        <span>${activeEtfMarketNote.publishedAt}</span>
+      </div>
+    </section>
     <div class="etf-summary-grid">
       <article>
         <span>總規模</span>
@@ -574,6 +662,7 @@ function render() {
   const visibleTopics = getVisibleTopics();
   renderStats(visibleTopics);
 
+  if (state.view === "daily") renderDailyFocus(visibleTopics);
   if (state.view === "themes") renderThemes(visibleTopics);
   if (state.view === "map") renderMap(visibleTopics);
   if (state.view === "companies") renderCompanies(visibleTopics);

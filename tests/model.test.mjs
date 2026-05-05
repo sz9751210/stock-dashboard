@@ -7,6 +7,7 @@ import {
   createAnalysisReport,
   createAiRankingReport,
   createEtfDashboard,
+  createDailyFocusReport,
   createMarketSnapshot,
   buildHeatMap,
   createInsights,
@@ -230,4 +231,20 @@ test("createEtfDashboard summarizes active ETF flows and holdings overlap", () =
     { ticker: "3035", name: "智原", etfCount: 1, topicTitles: ["ASIC 設計"] },
     { ticker: "3324", name: "雙鴻", etfCount: 1, topicTitles: ["AI 散熱"] },
   ]);
+});
+
+test("createDailyFocusReport combines market movers, ETF brief, and risk notes", () => {
+  const report = createDailyFocusReport(sampleTopics, sampleMarketSnapshots, sampleEtfs, {
+    sourceLabel: "ETFEdge",
+    asOf: "2026-05-04",
+    etfCount: 21,
+    totalAum: 5172,
+    tsmcLimitUsage: 39,
+  });
+
+  assert.equal(report.headline, "每日焦點");
+  assert.equal(report.etfBrief.sourceLabel, "ETFEdge");
+  assert.equal(report.etfBrief.totalAum, 5172);
+  assert.equal(report.marketMovers[0].ticker, "3035");
+  assert.match(report.riskNotes[0], /台積電 25%/);
 });

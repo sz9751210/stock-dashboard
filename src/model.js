@@ -376,3 +376,37 @@ export function createEtfDashboard(etfs, topics) {
       .sort((a, b) => b.etfCount - a.etfCount || a.ticker.localeCompare(b.ticker)),
   };
 }
+
+export function createDailyFocusReport(topics, snapshots, etfs, etfMeta) {
+  const marketRows = createMarketSnapshot(topics, snapshots)
+    .sort((a, b) => Math.abs(b.changePct) - Math.abs(a.changePct))
+    .slice(0, 6);
+  const etfDashboard = createEtfDashboard(etfs, topics);
+  const strongestTopic = [...topics].sort((a, b) => b.score - a.score)[0];
+  const biggestFlow = [...etfs].sort((a, b) => b.dailyFlow - a.dailyFlow)[0];
+
+  return {
+    headline: "每日焦點",
+    lead: `${strongestTopic.title} 維持最高題材動能，${biggestFlow.ticker} ${biggestFlow.name} 今日資金流入 ${biggestFlow.dailyFlow} 億。`,
+    marketMovers: marketRows,
+    etfBrief: {
+      sourceLabel: etfMeta.sourceLabel,
+      asOf: etfMeta.asOf,
+      etfCount: etfMeta.etfCount,
+      totalAum: etfMeta.totalAum,
+      tsmcLimitUsage: etfMeta.tsmcLimitUsage,
+      dailyInflow: etfDashboard.dailyInflow,
+      dailyOutflow: etfDashboard.dailyOutflow,
+      weeklyFlow: etfDashboard.weeklyFlow,
+    },
+    watchItems: [
+      `${strongestTopic.category}：${strongestTopic.catalyst}`,
+      `${biggestFlow.ticker}：追蹤日流入 ${biggestFlow.dailyFlow} 億與持股集中度`,
+      `公司資料庫：優先檢查 ${marketRows[0].ticker} ${marketRows[0].name} 的量價訊號`,
+    ],
+    riskNotes: [
+      `台積電 25% 上限使用率 ${etfMeta.tsmcLimitUsage}%，高含積 ETF 需追蹤可加碼空間。`,
+      "twstock snapshot 為離線更新資料，部署前應重新產生並人工檢查。",
+    ],
+  };
+}
