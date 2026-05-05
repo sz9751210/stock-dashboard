@@ -10,7 +10,9 @@ import {
   createDailyFocusReport,
   createEtfFlowReport,
   createTopicNetwork,
+  createCompanyDatabase,
   createMarketSnapshot,
+  createTrackedTickers,
   buildHeatMap,
   createInsights,
   filterTopics,
@@ -226,6 +228,37 @@ test("createMarketSnapshot joins twstock-style snapshots to company context", ()
     volume: 12000,
     signal: "量價轉強",
   });
+});
+
+test("createCompanyDatabase aggregates duplicate companies with topics, roles, and snapshot status", () => {
+  const rows = createCompanyDatabase(sampleTopics, sampleMarketSnapshots);
+  const row = rows.find((item) => item.ticker === "3035");
+
+  assert.equal(row.name, "智原");
+  assert.deepEqual(row.topicTitles, ["ASIC 設計"]);
+  assert.deepEqual(row.roles, ["ASIC 設計服務"]);
+  assert.equal(row.snapshotStatus, "updated");
+  assert.equal(row.lastPrice, 118.5);
+  assert.equal(row.momentumScore, 92);
+});
+
+test("createAiRankingReport adds mode summary, explanations, risk flags, and next checks", () => {
+  const report = createAiRankingReport(sampleTopics, { mode: "deep", query: "" });
+
+  assert.match(report.modeSummary, /深度研究/);
+  assert.ok(report.items[0].explanation.length > 0);
+  assert.ok(report.items[0].riskFlags.length >= 2);
+  assert.ok(report.items[0].nextChecks.length >= 2);
+});
+
+test("createTrackedTickers returns sorted unique tickers across topic companies and extra tickers", () => {
+  assert.deepEqual(createTrackedTickers(sampleTopics, ["2330", "3035"]), [
+    "2330",
+    "3017",
+    "3035",
+    "3324",
+    "3443",
+  ]);
 });
 
 test("createEtfDashboard summarizes active ETF flows and holdings overlap", () => {

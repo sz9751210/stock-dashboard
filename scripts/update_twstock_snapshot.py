@@ -4,6 +4,8 @@
 Usage:
   rtk python3 scripts/update_twstock_snapshot.py 2330 2308 3017
   rtk python3 scripts/update_twstock_snapshot.py --output public-market-snapshot.json 2330 2308
+  rtk python3 scripts/update_twstock_snapshot.py --tickers-file public/tracked-tickers.json --output public/market-snapshot.json
+  rtk python3 scripts/update_twstock_snapshot.py --tickers-file public/tracked-tickers.json --list-tickers
 
 The web app is static, so this script is an offline data-prep helper. Install
 twstock in your local Python environment before running it:
@@ -46,11 +48,23 @@ def build_snapshot(ticker: str) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("tickers", nargs="+")
+    parser.add_argument("tickers", nargs="*")
+    parser.add_argument("--tickers-file", type=Path)
+    parser.add_argument("--list-tickers", action="store_true")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
 
-    snapshots = [build_snapshot(ticker) for ticker in args.tickers]
+    tickers = list(args.tickers)
+    if args.tickers_file:
+        tickers.extend(json.loads(args.tickers_file.read_text(encoding="utf-8")))
+    tickers = sorted(set(tickers))
+    if not tickers:
+        raise SystemExit("No tickers provided.")
+    if args.list_tickers:
+        print(json.dumps(tickers, ensure_ascii=False))
+        return
+
+    snapshots = [build_snapshot(ticker) for ticker in tickers]
     payload = json.dumps(snapshots, ensure_ascii=False, indent=2)
 
     if args.output:

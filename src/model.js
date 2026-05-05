@@ -240,6 +240,15 @@ function scoreCompany(company, topic) {
       籌碼面: chips,
       新聞面: news,
     },
+    explanation: `${company.name} 主要受惠於「${topic.catalyst}」，在 ${topic.category} 題材中扮演 ${company.role} 角色。`,
+    riskFlags: [
+      `${topic.category} 題材分數已達 ${topic.score}，需留意估值反映程度。`,
+      `${company.role} 需求若低於預期，分數可能快速下修。`,
+    ],
+    nextChecks: [
+      `追蹤 ${company.ticker} 最新營收與法人籌碼。`,
+      `比對 ${topic.title} 同題材公司的相對強弱。`,
+    ],
   };
 }
 
@@ -258,8 +267,16 @@ function buildScorecards(topics, query) {
 }
 
 export function createAiRankingReport(topics, { mode = "bullish", query = "" } = {}) {
+  const modeSummaryByMode = {
+    bullish: "看多模式偏重題材動能與基本面延續性，適合找出高分核心受惠股。",
+    bearish: "看空模式會反向排序總分，適合找出題材或籌碼相對弱勢標的。",
+    short: "短線動能模式提高技術面、籌碼面與新聞面的權重，偏向交易觀察。",
+    swing: "波段趨勢模式預留給已產生公司 AI 分析後的中期追蹤清單。",
+    deep: "深度研究模式補充解釋、風險旗標與下一步檢查項目，適合作為研究起點。",
+  };
   const base = {
     updatedAtLabel: "示範資料即時整理",
+    modeSummary: modeSummaryByMode[mode] ?? modeSummaryByMode.bullish,
     modes: [
       { id: "personal", label: "我的分析" },
       { id: "bullish", label: "看多 Top 10" },
@@ -337,6 +354,48 @@ export function createAiRankingReport(topics, { mode = "bullish", query = "" } =
   };
 }
 
+export function createCompanyDatabase(topics, snapshots = []) {
+  const snapshotMap = new Map(snapshots.map((snapshot) => [snapshot.ticker, snapshot]));
+  const rows = new Map();
+
+  for (const company of buildCompanyIndex(topics)) {
+    const row =
+      rows.get(company.ticker) ??
+      {
+        ticker: company.ticker,
+        name: company.name,
+        market: company.market,
+        topicTitles: [],
+        categories: [],
+        roles: [],
+        momentumTotal: 0,
+        topicCount: 0,
+      };
+
+    if (!row.topicTitles.includes(company.topicTitle)) row.topicTitles.push(company.topicTitle);
+    if (!row.categories.includes(company.category)) row.categories.push(company.category);
+    if (!row.roles.includes(company.role)) row.roles.push(company.role);
+    row.momentumTotal += topics.find((topic) => topic.id === company.topicId)?.score ?? 0;
+    row.topicCount += 1;
+    rows.set(company.ticker, row);
+  }
+
+  return [...rows.values()]
+    .map((row) => {
+      const snapshot = snapshotMap.get(row.ticker);
+      return {
+        ...row,
+        momentumScore: Math.round(row.momentumTotal / row.topicCount),
+        snapshotStatus: snapshot ? "updated" : "pending",
+        lastPrice: snapshot?.lastPrice ?? null,
+        changePct: snapshot?.changePct ?? null,
+        volume: snapshot?.volume ?? null,
+        signal: snapshot?.signal ?? "待更新",
+      };
+    })
+    .sort((a, b) => b.momentumScore - a.momentumScore || a.ticker.localeCompare(b.ticker));
+}
+
 export function createMarketSnapshot(topics, snapshots) {
   const snapshotMap = new Map(snapshots.map((snapshot) => [snapshot.ticker, snapshot]));
 
@@ -355,6 +414,12 @@ export function createMarketSnapshot(topics, snapshots) {
         signal: snapshot.signal,
       };
     });
+}
+
+export function createTrackedTickers(topics, extraTickers = []) {
+  return [...new Set([...buildCompanyIndex(topics).map((company) => company.ticker), ...extraTickers])]
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b));
 }
 
 export function createEtfDashboard(etfs, topics) {

@@ -24,12 +24,13 @@ jobs:
       - name: Generate static market snapshot
         run: |
           mkdir -p public
+          node scripts/export_tracked_tickers.mjs --output public/tracked-tickers.json
           python scripts/update_twstock_snapshot.py \
-            --output public/market-snapshot.json \
-            3035 3443 3529 3661 3711 3189 3037 2449 3324 3017 2308 2395 3029
+            --tickers-file public/tracked-tickers.json \
+            --output public/market-snapshot.json
 
       - name: Commit updated snapshot
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: update twstock market snapshot"
-          file_pattern: public/market-snapshot.json
+          file_pattern: public/market-snapshot.json public/tracked-tickers.json

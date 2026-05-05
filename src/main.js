@@ -10,6 +10,7 @@ import {
 import { addSavedAnalysis, createUserProfile } from "./auth.js";
 import {
   buildCompanyIndex,
+  createCompanyDatabase,
   buildHeatMap,
   createAiRankingReport,
   createDailyFocusReport,
@@ -398,13 +399,46 @@ function renderCompanies(visibleTopics) {
     </div>
   `;
 
+  const companyRows = createCompanyDatabase(visibleTopics, marketSnapshots);
   const companies = filterCompanies(buildCompanyIndex(visibleTopics), state.query);
+  const databaseRows = state.query
+    ? companyRows.filter((company) =>
+        [
+          company.ticker,
+          company.name,
+          company.market,
+          company.topicTitles.join(" "),
+          company.categories.join(" "),
+          company.roles.join(" "),
+        ]
+          .join(" ")
+          .toLowerCase()
+          .includes(state.query.trim().toLowerCase()),
+      )
+    : companyRows;
   if (companies.length === 0) {
     renderEmpty();
     return;
   }
 
   content.innerHTML = `
+    <div class="company-summary-grid">
+      <article>
+        <span>公司數</span>
+        <strong>${databaseRows.length}</strong>
+        <small>去重後 ticker</small>
+      </article>
+      <article>
+        <span>已更新</span>
+        <strong>${databaseRows.filter((company) => company.snapshotStatus === "updated").length}</strong>
+        <small>twstock snapshot</small>
+      </article>
+      <article>
+        <span>待更新</span>
+        <strong>${databaseRows.filter((company) => company.snapshotStatus === "pending").length}</strong>
+        <small>下次 workflow 補齊</small>
+      </article>
+    </div>
     <div class="market-tape">
       ${createMarketSnapshot(visibleTopics, marketSnapshots)
         .slice(0, 6)
@@ -427,24 +461,29 @@ function renderCompanies(visibleTopics) {
             <th>角色</th>
             <th>題材</th>
             <th>市場</th>
+            <th>動能</th>
             <th>twstock Snapshot</th>
           </tr>
         </thead>
         <tbody>
-          ${companies
-            .map((company) => {
-              const snapshot = marketSnapshots.find((item) => item.ticker === company.ticker);
-              return `
+          ${databaseRows
+            .map(
+              (company) => `
                 <tr>
                   <td>${company.ticker}</td>
                   <td>${company.name}</td>
-                  <td>${company.role}</td>
-                  <td>${company.topicTitle}</td>
+                  <td>${company.roles.join("、")}</td>
+                  <td>${company.topicTitles.join("、")}</td>
                   <td>${company.market}</td>
-                  <td>${snapshot ? `${snapshot.lastPrice} / ${snapshot.changePct >= 0 ? "+" : ""}${snapshot.changePct}% · ${snapshot.signal}` : "待更新"}</td>
+                  <td>${company.momentumScore}</td>
+                  <td>${
+                    company.snapshotStatus === "updated"
+                      ? `${company.lastPrice} / ${company.changePct >= 0 ? "+" : ""}${company.changePct}% · ${company.signal}`
+                      : "待更新"
+                  }</td>
                 </tr>
-              `;
-            })
+              `,
+            )
             .join("")}
         </tbody>
       </table>
@@ -690,7 +729,7 @@ function renderAiRankings(visibleTopics) {
     <div>
       <p class="eyebrow">AI Score Ranking</p>
       <h2>AI 評分排行榜</h2>
-      <p class="section-copy">來自靜態示範資料的 AI 分析結果 · Top 10 · 五面向評分</p>
+      <p class="section-copy">${report.modeSummary}</p>
     </div>
   `;
 
@@ -747,6 +786,17 @@ function renderAiRankings(visibleTopics) {
                 <span>/ 100</span>
               </div>
               <div class="analysis-time">分析時間：${item.analyzedAt} · ${item.topicTitle}</div>
+              <p class="research-note">${item.explanation}</p>
+              <div class="ai-check-grid">
+                <div>
+                  <strong>風險旗標</strong>
+                  ${item.riskFlags.map((flag) => `<span>${flag}</span>`).join("")}
+                </div>
+                <div>
+                  <strong>下一步檢查</strong>
+                  ${item.nextChecks.map((check) => `<span>${check}</span>`).join("")}
+                </div>
+              </div>
               ${item.researchNote ? `<p class="research-note">${item.researchNote}</p>` : ""}
             </article>
           `,
