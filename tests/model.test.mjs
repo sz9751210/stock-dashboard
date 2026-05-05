@@ -4,6 +4,8 @@ import assert from "node:assert/strict";
 import {
   buildCompanyIndex,
   filterCompanies,
+  createAnalysisReport,
+  createAiRankingReport,
   buildHeatMap,
   createInsights,
   filterTopics,
@@ -109,4 +111,62 @@ test("createInsights respects company query when reporting company breadth", () 
   const insights = createInsights(sampleTopics, { query: "雙鴻" });
 
   assert.match(insights[2].body, /1 筆公司角色/);
+});
+
+test("createAnalysisReport returns ranked themes, catalysts, stages, roles, and watchlist", () => {
+  const report = createAnalysisReport(sampleTopics, { query: "AI" });
+
+  assert.deepEqual(
+    report.momentumRanking.map((item) => item.id),
+    ["asic", "thermal"],
+  );
+  assert.deepEqual(report.catalysts[0], {
+    title: "ASIC 設計",
+    catalyst: "CSP 自研晶片需求升溫",
+    updatedAt: "2026-05-01",
+    score: 92,
+  });
+  assert.deepEqual(report.supplyChainCoverage, [
+    { group: "上游 IP", count: 1 },
+    { group: "設計服務", count: 1 },
+    { group: "材料", count: 1 },
+    { group: "系統", count: 1 },
+  ]);
+  assert.deepEqual(report.roleBreakdown, [
+    { role: "ASIC 設計服務", count: 1 },
+    { role: "先進製程 ASIC", count: 1 },
+    { role: "散熱模組", count: 1 },
+    { role: "液冷系統", count: 1 },
+  ]);
+  assert.equal(report.watchlist[0].label, "ASIC 設計");
+  assert.match(report.watchlist[0].reason, /CSP 自研晶片需求升溫/);
+});
+
+test("createAiRankingReport builds bullish scorecards with five factors", () => {
+  const report = createAiRankingReport(sampleTopics, { mode: "bullish", query: "" });
+
+  assert.equal(report.title, "看多 Top 10");
+  assert.equal(report.items.length, 4);
+  assert.equal(report.items[0].sentiment, "偏多");
+  assert.deepEqual(Object.keys(report.items[0].factors), [
+    "題材面",
+    "基本面",
+    "技術面",
+    "籌碼面",
+    "新聞面",
+  ]);
+  assert.ok(report.items[0].totalScore >= report.items[1].totalScore);
+});
+
+test("createAiRankingReport supports bearish, short momentum, personal, and swing states", () => {
+  const bearish = createAiRankingReport(sampleTopics, { mode: "bearish", query: "" });
+  const short = createAiRankingReport(sampleTopics, { mode: "short", query: "" });
+  const personal = createAiRankingReport(sampleTopics, { mode: "personal", query: "" });
+  const swing = createAiRankingReport(sampleTopics, { mode: "swing", query: "" });
+
+  assert.equal(bearish.items[0].sentiment, "偏空");
+  assert.ok(bearish.items[0].totalScore <= bearish.items[1].totalScore);
+  assert.equal(short.items[0].strategy, "短線動能 (Beta)");
+  assert.equal(personal.requiresLogin, true);
+  assert.match(swing.emptyMessage, /排行榜尚無資料/);
 });

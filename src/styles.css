@@ -482,6 +482,233 @@ td {
   color: var(--violet);
 }
 
+.section-copy {
+  margin: 0.45rem 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.ai-mode-stack {
+  display: grid;
+  width: min(760px, 100%);
+  gap: 0.8rem;
+  margin: 0 auto 1.5rem;
+}
+
+.ai-mode-row {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.35rem;
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
+  background: rgba(22, 32, 51, 0.76);
+}
+
+.ai-mode-row.primary {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ai-mode-row.secondary {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ai-mode,
+.refresh-button {
+  min-height: 3rem;
+  border: 1px solid transparent;
+  border-radius: 0.55rem;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.ai-mode.active {
+  border-color: rgba(91, 140, 255, 0.9);
+  background: var(--brand);
+  color: #fff;
+}
+
+.analysis-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  color: var(--muted);
+}
+
+.refresh-button {
+  padding: 0 1rem;
+  border-color: var(--line);
+  background: rgba(22, 32, 51, 0.82);
+}
+
+.ai-ranking-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.ai-score-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 7.5rem;
+  gap: 0.9rem 1.25rem;
+  padding: 1.1rem;
+  border: 1px solid rgba(150, 163, 184, 0.22);
+  border-radius: 0.75rem;
+  background:
+    linear-gradient(90deg, rgba(91, 140, 255, 0.12), transparent 62%),
+    rgba(16, 24, 39, 0.86);
+  overflow: hidden;
+}
+
+.ai-score-card::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: var(--brand);
+}
+
+.ai-score-card.bullish::after {
+  background: var(--danger);
+}
+
+.ai-score-card.bearish::after {
+  background: var(--green);
+}
+
+.ai-card-main,
+.company-heading,
+.analysis-time,
+.factor-row,
+.ai-card-side {
+  display: flex;
+  align-items: center;
+}
+
+.ai-card-main {
+  gap: 0.75rem;
+}
+
+.rank-badge {
+  display: grid;
+  width: 2.2rem;
+  height: 2.2rem;
+  place-items: center;
+  border-radius: 0.55rem;
+  background: rgba(255, 255, 255, 0.08);
+  font-weight: 900;
+}
+
+.company-heading {
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.company-heading strong {
+  font-size: 1.05rem;
+}
+
+.company-heading span,
+.company-heading em {
+  border-radius: 999px;
+  padding: 0.25rem 0.55rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffd7df;
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.company-heading em {
+  color: var(--cyan);
+}
+
+.factor-list {
+  display: grid;
+  grid-column: 1;
+  gap: 0.42rem;
+}
+
+.factor-row {
+  grid-template-columns: 4.5rem minmax(0, 1fr) 2.4rem;
+  gap: 0.7rem;
+}
+
+.factor-row span {
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.factor-row strong {
+  color: #dce8ff;
+  text-align: right;
+}
+
+.factor-bar {
+  height: 0.42rem;
+  border-radius: 999px;
+  background: rgba(150, 163, 184, 0.16);
+  overflow: hidden;
+}
+
+.factor-bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--brand), var(--danger));
+}
+
+.ai-score-card.bearish .factor-bar i {
+  background: linear-gradient(90deg, var(--green), var(--cyan));
+}
+
+.ai-card-side {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  align-self: center;
+  justify-self: end;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 6.5rem;
+  min-height: 6.5rem;
+  border-left: 1px solid rgba(150, 163, 184, 0.16);
+}
+
+.ai-card-side strong {
+  color: #ff637d;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.ai-score-card.bearish .ai-card-side strong {
+  color: var(--green);
+}
+
+.ai-card-side span,
+.analysis-time,
+.research-note {
+  color: var(--muted);
+}
+
+.analysis-time {
+  grid-column: 1 / -1;
+  font-size: 0.84rem;
+}
+
+.research-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  line-height: 1.55;
+}
+
+.ai-empty {
+  color: var(--danger);
+}
+
 .empty-state {
   display: grid;
   min-height: 18rem;
@@ -511,11 +738,28 @@ td {
   .hero-stats,
   .topic-grid,
   .heat-grid,
-  .insight-grid {
+  .insight-grid,
+  .ai-mode-row.primary,
+  .ai-mode-row.secondary {
     grid-template-columns: 1fr;
   }
 
   .stage {
     grid-template-columns: 1fr;
+  }
+
+  .ai-score-card {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-card-side {
+    grid-row: auto;
+    grid-column: auto;
+    align-items: flex-start;
+    justify-self: stretch;
+    min-height: auto;
+    border-top: 1px solid rgba(150, 163, 184, 0.16);
+    border-left: 0;
+    padding-top: 0.9rem;
   }
 }

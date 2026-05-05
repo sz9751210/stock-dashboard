@@ -34,3 +34,16 @@ Because all paths are relative, the site works from both a user page domain and 
 ## Update Data
 
 Edit `src/data.js` to add new themes, companies, catalysts, and relationship nodes. The UI and tests read from the same data shape.
+
+## AI Analysis
+
+The AI analysis tab mirrors the reference site's ranking workflow in static form:
+
+- My analysis login prompt
+- Bullish Top 10
+- Bearish Top 10
+- Short-term momentum beta ranking
+- Swing trend beta empty state
+- Deep research scorecards
+
+Each ranking card includes five factors: theme, fundamentals, technicals, chip flow, and news. Scores are deterministic demo scores derived from the static topic and company data.

@@ -2,6 +2,8 @@ import { categories, topics } from "./data.js";
 import {
   buildCompanyIndex,
   buildHeatMap,
+  createAnalysisReport,
+  createAiRankingReport,
   createInsights,
   filterCompanies,
   filterTopics,
@@ -13,6 +15,7 @@ const state = {
   category: "全部",
   query: "",
   selectedTopicId: topics[0]?.id ?? "",
+  analysisMode: "bullish",
 };
 
 const content = document.querySelector("#content");
@@ -244,6 +247,8 @@ function renderHeat(visibleTopics) {
 }
 
 function renderAnalysis(visibleTopics) {
+  const report = createAnalysisReport(visibleTopics, { query: state.query });
+
   viewTitle.innerHTML = `
     <div>
       <p class="eyebrow">AI Analysis</p>
@@ -253,7 +258,7 @@ function renderAnalysis(visibleTopics) {
 
   content.innerHTML = `
     <div class="insight-grid">
-      ${createInsights(visibleTopics, { query: state.query })
+      ${report.insights
         .map(
           (insight) => `
             <article class="insight-card">
@@ -265,6 +270,181 @@ function renderAnalysis(visibleTopics) {
         )
         .join("")}
     </div>
+    <div class="analysis-layout">
+      <section class="analysis-panel wide">
+        <div class="panel-kicker">Momentum Ranking</div>
+        <h3>動能排行</h3>
+        <div class="ranking-list">
+          ${report.momentumRanking
+            .map(
+              (item, index) => `
+                <div class="ranking-row">
+                  <span class="rank">${index + 1}</span>
+                  <div>
+                    <strong>${item.title}</strong>
+                    <small>${item.category} · ${item.companyCount} 家公司</small>
+                  </div>
+                  <span class="score">${item.score}</span>
+                </div>
+              `,
+            )
+            .join("")}
+        </div>
+      </section>
+
+      <section class="analysis-panel">
+        <div class="panel-kicker">Catalyst Radar</div>
+        <h3>催化因素</h3>
+        <div class="catalyst-list">
+          ${report.catalysts
+            .slice(0, 5)
+            .map(
+              (item) => `
+                <article>
+                  <strong>${item.title}</strong>
+                  <p>${item.catalyst}</p>
+                  <span>核實 ${item.updatedAt} · 分數 ${item.score}</span>
+                </article>
+              `,
+            )
+            .join("")}
+        </div>
+      </section>
+
+      <section class="analysis-panel">
+        <div class="panel-kicker">Supply Chain</div>
+        <h3>供應鏈覆蓋</h3>
+        <div class="bar-list">
+          ${report.supplyChainCoverage
+            .map(
+              (item) => `
+                <div class="bar-row">
+                  <span>${item.group}</span>
+                  <div class="bar"><i style="width:${Math.max(18, item.count * 22)}%"></i></div>
+                  <strong>${item.count}</strong>
+                </div>
+              `,
+            )
+            .join("")}
+        </div>
+      </section>
+
+      <section class="analysis-panel">
+        <div class="panel-kicker">Company Roles</div>
+        <h3>公司角色分布</h3>
+        <div class="role-cloud">
+          ${report.roleBreakdown
+            .slice(0, 12)
+            .map((item) => `<span>${item.role}<b>${item.count}</b></span>`)
+            .join("")}
+        </div>
+      </section>
+
+      <section class="analysis-panel wide">
+        <div class="panel-kicker">Watchlist</div>
+        <h3>追蹤清單</h3>
+        <div class="watchlist">
+          ${report.watchlist
+            .map(
+              (item) => `
+                <article>
+                  <div>
+                    <strong>${item.label}</strong>
+                    <p>${item.reason}</p>
+                  </div>
+                  <span class="score large">${item.score}</span>
+                </article>
+              `,
+            )
+            .join("")}
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+function renderAiRankings(visibleTopics) {
+  const report = createAiRankingReport(visibleTopics, {
+    mode: state.analysisMode,
+    query: state.query,
+  });
+
+  viewTitle.innerHTML = `
+    <div>
+      <p class="eyebrow">AI Score Ranking</p>
+      <h2>AI 評分排行榜</h2>
+      <p class="section-copy">來自靜態示範資料的 AI 分析結果 · Top 10 · 五面向評分</p>
+    </div>
+  `;
+
+  const modeButtons = (modes) =>
+    modes
+      .map(
+        (mode) => `
+          <button class="ai-mode ${state.analysisMode === mode.id ? "active" : ""}" data-analysis-mode="${mode.id}">
+            ${mode.label}
+          </button>
+        `,
+      )
+      .join("");
+
+  const emptyMarkup = `
+    <div class="empty-state ai-empty">
+      <h2>${report.emptyMessage}</h2>
+      <p>${report.requiresLogin ? "GitHub Pages 靜態版不提供登入；請切換排行榜模式查看示範分析。" : "切換看多、看空或短線動能模式可查看目前示範資料。"}</p>
+    </div>
+  `;
+
+  const rankingMarkup = `
+    <div class="ai-ranking-list">
+      ${report.items
+        .map(
+          (item) => `
+            <article class="ai-score-card ${item.sentiment === "偏空" ? "bearish" : "bullish"}">
+              <div class="ai-card-main">
+                <div class="rank-badge">${item.rank <= 3 ? ["🥇", "🥈", "🥉"][item.rank - 1] : item.rank}</div>
+                <div class="company-heading">
+                  <strong>${item.ticker} ${item.name}</strong>
+                  <span>${item.sentiment}</span>
+                  ${item.strategy ? `<em>${item.strategy}</em>` : ""}
+                </div>
+              </div>
+              <div class="factor-list">
+                ${Object.entries(item.factors)
+                  .map(
+                    ([label, value]) => `
+                      <div class="factor-row">
+                        <span>${label}</span>
+                        <div class="factor-bar"><i style="width:${value}%"></i></div>
+                        <strong>${value}</strong>
+                      </div>
+                    `,
+                  )
+                  .join("")}
+              </div>
+              <div class="ai-card-side">
+                <strong>${item.totalScore.toFixed(1)}</strong>
+                <span>/ 100</span>
+              </div>
+              <div class="analysis-time">分析時間：${item.analyzedAt} · ${item.topicTitle}</div>
+              ${item.researchNote ? `<p class="research-note">${item.researchNote}</p>` : ""}
+            </article>
+          `,
+        )
+        .join("")}
+    </div>
+  `;
+
+  content.innerHTML = `
+    <div class="ai-mode-stack">
+      <div class="ai-mode-row primary">${modeButtons(report.modes.slice(0, 3))}</div>
+      <div class="ai-mode-row secondary">${modeButtons(report.modes.slice(3))}</div>
+    </div>
+    <div class="analysis-meta">
+      <span>最後更新：${report.updatedAtLabel}</span>
+      <button class="refresh-button" type="button">重新整理</button>
+    </div>
+    ${report.items.length === 0 ? emptyMarkup : rankingMarkup}
   `;
 }
 
@@ -276,7 +456,7 @@ function render() {
   if (state.view === "map") renderMap(visibleTopics);
   if (state.view === "companies") renderCompanies(visibleTopics);
   if (state.view === "heat") renderHeat(visibleTopics);
-  if (state.view === "analysis") renderAnalysis(visibleTopics);
+  if (state.view === "analysis") renderAiRankings(visibleTopics);
 }
 
 document.querySelector(".nav").addEventListener("click", (event) => {
@@ -290,6 +470,13 @@ categoryFilters.addEventListener("click", (event) => {
 });
 
 content.addEventListener("click", (event) => {
+  const analysisButton = event.target.closest("[data-analysis-mode]");
+  if (analysisButton) {
+    state.analysisMode = analysisButton.dataset.analysisMode;
+    render();
+    return;
+  }
+
   const button = event.target.closest("[data-topic]");
   if (!button) return;
 

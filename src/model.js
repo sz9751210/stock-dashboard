@@ -109,3 +109,199 @@ export function createInsights(topics, { query = "" } = {}) {
     },
   ];
 }
+
+export function createAnalysisReport(topics, { query = "" } = {}) {
+  const topicCompanies = buildCompanyIndex(topics);
+  const groupCounts = new Map();
+  const roleCounts = new Map();
+
+  for (const topic of topics) {
+    for (const relationship of topic.relationships ?? []) {
+      groupCounts.set(relationship.group, (groupCounts.get(relationship.group) ?? 0) + 1);
+    }
+  }
+
+  for (const company of topicCompanies) {
+    roleCounts.set(company.role, (roleCounts.get(company.role) ?? 0) + 1);
+  }
+
+  const momentumRanking = [...topics]
+    .sort((a, b) => b.score - a.score || b.updatedAt.localeCompare(a.updatedAt))
+    .map((topic) => ({
+      id: topic.id,
+      title: topic.title,
+      category: topic.category,
+      score: topic.score,
+      companyCount: topic.companies.length,
+    }));
+
+  const catalysts = momentumRanking.map((rankedTopic) => {
+    const topic = topics.find((item) => item.id === rankedTopic.id);
+    return {
+      title: topic.title,
+      catalyst: topic.catalyst,
+      updatedAt: topic.updatedAt,
+      score: topic.score,
+    };
+  });
+
+  const supplyChainCoverage = [...groupCounts.entries()]
+    .map(([group, count], index) => ({ group, count, index }))
+    .sort((a, b) => b.count - a.count || a.index - b.index)
+    .map(({ group, count }) => ({ group, count }));
+
+  const roleBreakdown = [...roleCounts.entries()]
+    .map(([role, count], index) => ({ role, count, index }))
+    .sort((a, b) => b.count - a.count || a.index - b.index)
+    .map(({ role, count }) => ({ role, count }));
+
+  const watchlist = momentumRanking.slice(0, 4).map((topic) => ({
+    label: topic.title,
+    score: topic.score,
+    reason: `${topics.find((item) => item.id === topic.id).catalyst}；可追蹤 ${topic.companyCount} 個公司角色。`,
+  }));
+
+  return {
+    insights: createInsights(topics, { query }),
+    momentumRanking,
+    catalysts,
+    supplyChainCoverage,
+    roleBreakdown,
+    watchlist,
+  };
+}
+
+function clampScore(score) {
+  return Math.max(5, Math.min(99, Math.round(score)));
+}
+
+function tickerSeed(ticker) {
+  return String(ticker)
+    .split("")
+    .reduce((sum, char, index) => sum + Number(char || 0) * (index + 3), 0);
+}
+
+function scoreCompany(company, topic) {
+  const seed = tickerSeed(company.ticker);
+  const theme = clampScore(topic.score + (seed % 9) - 4);
+  const fundamental = clampScore(topic.score - 8 + (seed % 17));
+  const technical = clampScore(topic.score - 16 + ((seed * 3) % 31));
+  const chips = clampScore(topic.score - 14 + ((seed * 5) % 29));
+  const news = clampScore(topic.score - 10 + ((seed * 7) % 25));
+  const totalScore = Number(
+    (theme * 0.28 + fundamental * 0.2 + technical * 0.2 + chips * 0.16 + news * 0.16).toFixed(1),
+  );
+
+  return {
+    ticker: company.ticker,
+    name: company.name,
+    role: company.role,
+    topicTitle: topic.title,
+    category: topic.category,
+    catalyst: topic.catalyst,
+    analyzedAt: topic.updatedAt,
+    totalScore,
+    sentiment: totalScore >= 60 ? "偏多" : "偏空",
+    factors: {
+      題材面: theme,
+      基本面: fundamental,
+      技術面: technical,
+      籌碼面: chips,
+      新聞面: news,
+    },
+  };
+}
+
+function buildScorecards(topics, query) {
+  const normalizedQuery = query.trim().toLowerCase();
+  const cards = topics.flatMap((topic) => topic.companies.map((company) => scoreCompany(company, topic)));
+
+  if (!normalizedQuery) return cards;
+
+  return cards.filter((card) =>
+    [card.ticker, card.name, card.role, card.topicTitle, card.category, card.catalyst]
+      .join(" ")
+      .toLowerCase()
+      .includes(normalizedQuery),
+  );
+}
+
+export function createAiRankingReport(topics, { mode = "bullish", query = "" } = {}) {
+  const base = {
+    updatedAtLabel: "示範資料即時整理",
+    modes: [
+      { id: "personal", label: "我的分析" },
+      { id: "bullish", label: "看多 Top 10" },
+      { id: "bearish", label: "看空 Top 10" },
+      { id: "short", label: "短線動能 (Beta)" },
+      { id: "swing", label: "波段趨勢 (Beta)" },
+      { id: "deep", label: "深度研究" },
+    ],
+  };
+
+  if (mode === "personal") {
+    return {
+      ...base,
+      title: "我的分析",
+      requiresLogin: true,
+      items: [],
+      emptyMessage: "請先登入以查看您的分析紀錄",
+    };
+  }
+
+  if (mode === "swing") {
+    return {
+      ...base,
+      title: "波段趨勢 (Beta)",
+      items: [],
+      emptyMessage: "排行榜尚無資料，點擊公司頁的 AI 分析後會自動出現在這裡。",
+    };
+  }
+
+  const cards = buildScorecards(topics, query);
+  const titleByMode = {
+    bullish: "看多 Top 10",
+    bearish: "看空 Top 10",
+    short: "短線動能 (Beta)",
+    deep: "深度研究",
+  };
+
+  const ranked = [...cards]
+    .map((card) => {
+      if (mode === "bearish") {
+        return { ...card, sentiment: "偏空" };
+      }
+
+      if (mode !== "short") return card;
+
+      const shortScore = Number(
+        (card.factors.技術面 * 0.38 + card.factors.籌碼面 * 0.34 + card.factors.新聞面 * 0.28).toFixed(1),
+      );
+      return {
+        ...card,
+        totalScore: shortScore,
+        sentiment: shortScore >= 60 ? "偏多" : "偏空",
+        strategy: "短線動能 (Beta)",
+      };
+    })
+    .sort((a, b) => {
+      if (mode === "bearish") return a.totalScore - b.totalScore || a.ticker.localeCompare(b.ticker);
+      return b.totalScore - a.totalScore || a.ticker.localeCompare(b.ticker);
+    })
+    .slice(0, 10)
+    .map((card, index) => ({
+      ...card,
+      rank: index + 1,
+      researchNote:
+        mode === "deep"
+          ? `${card.name} 的主要觀察點是「${card.catalyst}」，需同步檢查 ${card.role} 的訂單能見度與估值位置。`
+          : "",
+    }));
+
+  return {
+    ...base,
+    title: titleByMode[mode] ?? titleByMode.bullish,
+    items: ranked,
+    emptyMessage: ranked.length === 0 ? "目前沒有符合條件的 AI 分析結果。" : "",
+  };
+}
