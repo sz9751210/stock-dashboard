@@ -583,6 +583,71 @@ h3 {
   box-shadow: inset 4px 0 0 rgba(148, 163, 184, 0.8);
 }
 
+.network-edge-flow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+.network-edge {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 3.4rem minmax(0, 1fr);
+  gap: 0.55rem;
+  align-items: center;
+  border: 1px solid rgba(150, 163, 184, 0.16);
+  border-radius: 0.55rem;
+  padding: 0.65rem;
+  background: rgba(16, 24, 39, 0.76);
+}
+
+.network-edge span,
+.network-edge strong {
+  overflow: hidden;
+  color: #dfe9fb;
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.network-edge strong {
+  text-align: right;
+}
+
+.network-edge i {
+  position: relative;
+  height: 2px;
+  background: #76a7ff;
+}
+
+.network-edge i::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -1px;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  color: inherit;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.network-edge.technology i {
+  background: #b26bff;
+  color: #b26bff;
+}
+
+.network-edge.supply i {
+  background: #76a7ff;
+  color: #76a7ff;
+}
+
+.network-edge.link i {
+  background: #94a3b8;
+  color: #94a3b8;
+}
+
 .table-wrap {
   overflow-x: auto;
 }

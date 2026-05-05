@@ -339,6 +339,7 @@ test("createTopicNetwork returns swimlanes, nodes, and edge types", () => {
       },
     ],
     edgesByType: { supply: 1 },
+    edges: [{ from: "ASIC / IP 設計", to: "AI 伺服器組裝", type: "supply" }],
   });
 });
 
@@ -377,4 +378,5 @@ test("createTopicNetwork can select a cluster-specific view", () => {
     [["AI 終端裝置", ["AI PC"]]],
   );
   assert.deepEqual(network.edgesByType, { supply: 1 });
+  assert.deepEqual(network.edges, [{ from: "AI PC", to: "edge-ai", type: "supply" }]);
 });

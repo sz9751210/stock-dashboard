@@ -347,6 +347,19 @@ function renderMap(visibleTopics) {
               )
               .join("")}
           </div>
+          <div class="network-edge-flow">
+            ${network.edges
+              .map(
+                (edge) => `
+                  <div class="network-edge ${edge.type}">
+                    <span>${edge.from}</span>
+                    <i></i>
+                    <strong>${edge.to}</strong>
+                  </div>
+                `,
+              )
+              .join("")}
+          </div>
         `
         : `
     <div class="map-layout">
