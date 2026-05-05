@@ -79,6 +79,30 @@ export function groupRelationships(topic) {
   return [...groups.entries()].map(([group, nodes]) => ({ group, nodes }));
 }
 
+export function createTopicNetwork(topic) {
+  const network = topic.network;
+  if (!network) {
+    return { clusters: [], lanes: [], edgesByType: {} };
+  }
+
+  const laneMap = new Map(network.lanes.map((lane) => [lane.id, { ...lane, nodes: [] }]));
+  for (const node of network.nodes) {
+    const lane = laneMap.get(node.lane);
+    if (lane) lane.nodes.push(node);
+  }
+
+  const edgesByType = {};
+  for (const edge of network.edges) {
+    edgesByType[edge.type] = (edgesByType[edge.type] ?? 0) + 1;
+  }
+
+  return {
+    clusters: network.clusters,
+    lanes: [...laneMap.values()],
+    edgesByType,
+  };
+}
+
 export function createInsights(topics, { query = "" } = {}) {
   if (topics.length === 0) {
     return [

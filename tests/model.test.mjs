@@ -9,6 +9,7 @@ import {
   createEtfDashboard,
   createDailyFocusReport,
   createEtfFlowReport,
+  createTopicNetwork,
   createMarketSnapshot,
   buildHeatMap,
   createInsights,
@@ -266,4 +267,40 @@ test("createEtfFlowReport summarizes daily add and trim events", () => {
     { etfTicker: "00980A", etfName: "主動台灣AI", addAmount: 14.2, trimAmount: 0, netAmount: 14.2 },
     { etfTicker: "00981A", etfName: "主動台灣科技", addAmount: 0, trimAmount: -12.4, netAmount: -12.4 },
   ]);
+});
+
+test("createTopicNetwork returns swimlanes, nodes, and edge types", () => {
+  const topic = {
+    id: "ai-server-odm",
+    title: "AI 伺服器｜整機組裝",
+    network: {
+      clusters: ["AI 算力主鏈", "消費與終端"],
+      lanes: [
+        { id: "chip", label: "AI 晶片設計" },
+        { id: "assembly", label: "先進封裝製程" },
+      ],
+      nodes: [
+        { id: "asic", label: "ASIC / IP 設計", lane: "chip", kind: "technology" },
+        { id: "odm", label: "AI 伺服器組裝", lane: "assembly", kind: "supply" },
+      ],
+      edges: [{ from: "asic", to: "odm", type: "supply" }],
+    },
+  };
+
+  assert.deepEqual(createTopicNetwork(topic), {
+    clusters: ["AI 算力主鏈", "消費與終端"],
+    lanes: [
+      {
+        id: "chip",
+        label: "AI 晶片設計",
+        nodes: [{ id: "asic", label: "ASIC / IP 設計", lane: "chip", kind: "technology" }],
+      },
+      {
+        id: "assembly",
+        label: "先進封裝製程",
+        nodes: [{ id: "odm", label: "AI 伺服器組裝", lane: "assembly", kind: "supply" }],
+      },
+    ],
+    edgesByType: { supply: 1 },
+  });
 });

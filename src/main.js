@@ -16,6 +16,7 @@ import {
   createEtfDashboard,
   createEtfFlowReport,
   createMarketSnapshot,
+  createTopicNetwork,
   filterCompanies,
   filterTopics,
   groupRelationships,
@@ -23,13 +24,17 @@ import {
 
 const USER_KEY = "ai-industry-map-user";
 const SAVED_ANALYSES_KEY = "ai-industry-map-saved-analyses";
+const params = new URLSearchParams(window.location.search);
+const requestedTopic = params.get("topic");
+const initialTopicId = topics.some((topic) => topic.id === requestedTopic) ? requestedTopic : topics[0]?.id;
 
 const state = {
-  view: "themes",
+  view: requestedTopic ? "map" : "themes",
   category: "全部",
   query: "",
-  selectedTopicId: topics[0]?.id ?? "",
+  selectedTopicId: initialTopicId ?? "",
   analysisMode: "bullish",
+  mapMode: "relation",
   user: loadJson(USER_KEY, null),
   savedAnalyses: loadJson(SAVED_ANALYSES_KEY, []),
 };
@@ -107,11 +112,15 @@ function logout() {
   render();
 }
 
+function syncNav() {
+  document.querySelectorAll(".nav-button").forEach((button) => {
+    button.classList.toggle("active", button.dataset.view === state.view);
+  });
+}
+
 function setView(view) {
   state.view = view;
-  document.querySelectorAll(".nav-button").forEach((button) => {
-    button.classList.toggle("active", button.dataset.view === view);
-  });
+  syncNav();
   render();
 }
 
@@ -261,10 +270,12 @@ function renderThemes(visibleTopics) {
 }
 
 function renderMap(visibleTopics) {
+  const networkTopics = topics.filter((topic) => topic.network);
   viewTitle.innerHTML = `
     <div>
       <p class="eyebrow">Supply Chain Map</p>
       <h2>產業地圖</h2>
+      <p class="section-copy">選擇題材後查看傳統卡片或供應鏈關係圖。</p>
     </div>
   `;
 
@@ -274,11 +285,59 @@ function renderMap(visibleTopics) {
   }
 
   const selectedTopic =
-    visibleTopics.find((topic) => topic.id === state.selectedTopicId) ?? visibleTopics[0];
+    topics.find((topic) => topic.id === state.selectedTopicId) ?? visibleTopics[0];
   state.selectedTopicId = selectedTopic.id;
   const groups = groupRelationships(selectedTopic);
+  const network = createTopicNetwork(selectedTopic);
 
   content.innerHTML = `
+    <div class="map-toolbar">
+      <div class="map-topic-tabs">
+        ${networkTopics
+          .map(
+            (topic) => `
+              <button class="topic-selector ${topic.id === selectedTopic.id ? "active" : ""}" data-topic="${topic.id}">
+                <span>${topic.category}</span>
+                ${topic.title.replace(" (AI Server ODM)", "")}
+              </button>
+            `,
+          )
+          .join("")}
+      </div>
+      <div class="view-toggle">
+        <button class="${state.mapMode === "cards" ? "active" : ""}" data-map-mode="cards">傳統卡片</button>
+        <button class="${state.mapMode === "relation" ? "active" : ""}" data-map-mode="relation">關係圖</button>
+      </div>
+    </div>
+    ${
+      selectedTopic.network && state.mapMode === "relation"
+        ? `
+          <div class="network-tabs">
+            ${network.clusters.map((cluster, index) => `<button class="${index === 0 ? "active" : ""}">${cluster}</button>`).join("")}
+          </div>
+          <div class="network-legend">
+            <span class="legend-supply">供應關係 ${network.edgesByType.supply ?? 0}</span>
+            <span class="legend-tech">技術關係 ${network.edgesByType.technology ?? 0}</span>
+            <span class="legend-link">關聯 ${network.edgesByType.link ?? 0}</span>
+          </div>
+          <div class="network-board">
+            ${network.lanes
+              .map(
+                (lane) => `
+                  <section class="network-lane">
+                    <h4>${lane.label}</h4>
+                    <div class="network-nodes">
+                      ${lane.nodes
+                        .map((node) => `<button class="network-node ${node.kind}">${node.label}</button>`)
+                        .join("")}
+                    </div>
+                  </section>
+                `,
+              )
+              .join("")}
+          </div>
+        `
+        : `
     <div class="map-layout">
       <aside class="topic-list" aria-label="目前篩選題材">
         ${visibleTopics
@@ -316,6 +375,8 @@ function renderMap(visibleTopics) {
         </div>
       </div>
     </div>
+        `
+    }
   `;
 }
 
@@ -699,6 +760,7 @@ function renderAiRankings(visibleTopics) {
 
 function render() {
   const visibleTopics = getVisibleTopics();
+  syncNav();
   renderStats(visibleTopics);
 
   if (state.view === "daily") renderDailyFocus(visibleTopics);
@@ -753,10 +815,22 @@ content.addEventListener("click", (event) => {
     return;
   }
 
+  const mapModeButton = event.target.closest("[data-map-mode]");
+  if (mapModeButton) {
+    state.mapMode = mapModeButton.dataset.mapMode;
+    render();
+    return;
+  }
+
   const button = event.target.closest("[data-topic]");
   if (!button) return;
 
   state.selectedTopicId = button.dataset.topic;
+  if (state.view === "map") {
+    const url = new URL(window.location.href);
+    url.searchParams.set("topic", state.selectedTopicId);
+    window.history.replaceState({}, "", url);
+  }
   render();
 });
 
