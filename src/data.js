@@ -186,3 +186,73 @@ export const topics = [
     ],
   },
 ];
+
+export const marketSnapshots = [
+  { ticker: "3035", lastPrice: 118.5, changePct: 1.2, volume: 12000, signal: "量價轉強" },
+  { ticker: "3443", lastPrice: 1530, changePct: 2.4, volume: 5400, signal: "高檔續強" },
+  { ticker: "3529", lastPrice: 2765, changePct: -0.3, volume: 900, signal: "高價震盪" },
+  { ticker: "3661", lastPrice: 4210, changePct: 3.1, volume: 2100, signal: "突破區間" },
+  { ticker: "3711", lastPrice: 166.5, changePct: 0.6, volume: 18500, signal: "封測輪動" },
+  { ticker: "3189", lastPrice: 124.5, changePct: 1.8, volume: 9800, signal: "載板轉強" },
+  { ticker: "3037", lastPrice: 192, changePct: -0.4, volume: 11200, signal: "量縮整理" },
+  { ticker: "2449", lastPrice: 109.5, changePct: 0.9, volume: 7600, signal: "測試需求升溫" },
+  { ticker: "3324", lastPrice: 285, changePct: -0.8, volume: 8200, signal: "回測月線" },
+  { ticker: "3017", lastPrice: 715, changePct: 2.2, volume: 6900, signal: "液冷題材續強" },
+  { ticker: "2308", lastPrice: 392, changePct: 1.1, volume: 24500, signal: "外資加碼" },
+  { ticker: "2395", lastPrice: 385.5, changePct: -1.0, volume: 4300, signal: "邊緣 AI 拉回" },
+  { ticker: "3029", lastPrice: 92.8, changePct: 0.5, volume: 2100, signal: "資安需求穩定" },
+];
+
+export const activeEtfs = [
+  {
+    ticker: "00980A",
+    name: "主動台灣AI",
+    issuer: "示範投信",
+    listingDate: "2025-12-18",
+    aum: 135.2,
+    dailyFlow: 4.8,
+    weeklyFlow: 18.4,
+    tsmcWeight: 23.6,
+    report: "AI 伺服器與半導體鏈比重偏高，接近台積電 25% 上限追蹤區。",
+    topHoldings: [
+      { ticker: "3661", name: "世芯-KY", weight: 9.8 },
+      { ticker: "3035", name: "智原", weight: 8.2 },
+      { ticker: "3017", name: "奇鋐", weight: 6.5 },
+      { ticker: "3324", name: "雙鴻", weight: 5.1 },
+    ],
+  },
+  {
+    ticker: "00981A",
+    name: "主動台灣科技",
+    issuer: "示範投信",
+    listingDate: "2026-01-09",
+    aum: 86.5,
+    dailyFlow: -1.5,
+    weeklyFlow: 6.2,
+    tsmcWeight: 18.4,
+    report: "持股分散在 IC 設計、封測與資料中心網通，短線資金流較保守。",
+    topHoldings: [
+      { ticker: "3443", name: "創意", weight: 6.8 },
+      { ticker: "3711", name: "日月光投控", weight: 5.7 },
+      { ticker: "2345", name: "智邦", weight: 5.4 },
+      { ticker: "2308", name: "台達電", weight: 4.9 },
+    ],
+  },
+  {
+    ticker: "00982A",
+    name: "主動成長高股息",
+    issuer: "示範投信",
+    listingDate: "2026-02-03",
+    aum: 62.4,
+    dailyFlow: 2.1,
+    weeklyFlow: -3.8,
+    tsmcWeight: 12.9,
+    report: "兼顧現金流與科技成長，近期調升電源、重電與能源管理配置。",
+    topHoldings: [
+      { ticker: "2308", name: "台達電", weight: 7.2 },
+      { ticker: "1519", name: "華城", weight: 5.6 },
+      { ticker: "1609", name: "大亞", weight: 4.8 },
+      { ticker: "3029", name: "零壹", weight: 3.2 },
+    ],
+  },
+];

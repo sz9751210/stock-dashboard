@@ -6,6 +6,8 @@ import {
   filterCompanies,
   createAnalysisReport,
   createAiRankingReport,
+  createEtfDashboard,
+  createMarketSnapshot,
   buildHeatMap,
   createInsights,
   filterTopics,
@@ -46,6 +48,37 @@ const sampleTopics = [
       { group: "材料", label: "導熱材料" },
       { group: "系統", label: "液冷 CDU" },
     ],
+  },
+];
+
+const sampleMarketSnapshots = [
+  { ticker: "3035", lastPrice: 118.5, changePct: 1.2, volume: 12000, signal: "量價轉強" },
+  { ticker: "3324", lastPrice: 285, changePct: -0.8, volume: 8200, signal: "回測月線" },
+];
+
+const sampleEtfs = [
+  {
+    ticker: "00980A",
+    name: "主動台灣AI",
+    issuer: "示範投信",
+    aum: 135.2,
+    dailyFlow: 4.8,
+    weeklyFlow: 18.4,
+    tsmcWeight: 23.6,
+    topHoldings: [
+      { ticker: "3035", name: "智原", weight: 8.2 },
+      { ticker: "3324", name: "雙鴻", weight: 5.1 },
+    ],
+  },
+  {
+    ticker: "00981A",
+    name: "主動台灣科技",
+    issuer: "示範投信",
+    aum: 86.5,
+    dailyFlow: -1.5,
+    weeklyFlow: 6.2,
+    tsmcWeight: 18.4,
+    topHoldings: [{ ticker: "3443", name: "創意", weight: 6.8 }],
   },
 ];
 
@@ -169,4 +202,32 @@ test("createAiRankingReport supports bearish, short momentum, personal, and swin
   assert.equal(short.items[0].strategy, "短線動能 (Beta)");
   assert.equal(personal.requiresLogin, true);
   assert.match(swing.emptyMessage, /排行榜尚無資料/);
+});
+
+test("createMarketSnapshot joins twstock-style snapshots to company context", () => {
+  const rows = createMarketSnapshot(sampleTopics, sampleMarketSnapshots);
+
+  assert.deepEqual(rows[0], {
+    ticker: "3035",
+    name: "智原",
+    role: "ASIC 設計服務",
+    topicTitle: "ASIC 設計",
+    lastPrice: 118.5,
+    changePct: 1.2,
+    volume: 12000,
+    signal: "量價轉強",
+  });
+});
+
+test("createEtfDashboard summarizes active ETF flows and holdings overlap", () => {
+  const dashboard = createEtfDashboard(sampleEtfs, sampleTopics);
+
+  assert.equal(dashboard.totalAum, 221.7);
+  assert.equal(dashboard.dailyInflow, 4.8);
+  assert.equal(dashboard.dailyOutflow, -1.5);
+  assert.equal(dashboard.tsmcLimit[0].roomToLimit, 1.4);
+  assert.deepEqual(dashboard.holdingOverlap.slice(0, 2), [
+    { ticker: "3035", name: "智原", etfCount: 1, topicTitles: ["ASIC 設計"] },
+    { ticker: "3324", name: "雙鴻", etfCount: 1, topicTitles: ["AI 散熱"] },
+  ]);
 });

@@ -35,6 +35,17 @@ Because all paths are relative, the site works from both a user page domain and 
 
 Edit `src/data.js` to add new themes, companies, catalysts, and relationship nodes. The UI and tests read from the same data shape.
 
+## Stock Data With twstock
+
+GitHub Pages cannot run Python at request time, so `twstock` is used as an offline data preparation step. Generate a static snapshot locally, review it, then copy the relevant rows into `marketSnapshots` in `src/data.js`.
+
+```bash
+rtk python3 -m pip install twstock
+rtk python3 scripts/update_twstock_snapshot.py 2330 2308 3017
+```
+
+The company database displays these rows as `twstock Snapshot` data.
+
 ## AI Analysis
 
 The AI analysis tab mirrors the reference site's ranking workflow in static form:
@@ -47,3 +58,13 @@ The AI analysis tab mirrors the reference site's ranking workflow in static form
 - Deep research scorecards
 
 Each ranking card includes five factors: theme, fundamentals, technicals, chip flow, and news. Scores are deterministic demo scores derived from the static topic and company data.
+
+## Active ETF
+
+The Active ETF tab tracks demo active ETF data inspired by ETFEdge-style summaries:
+
+- total AUM
+- daily inflow and outflow
+- weekly flow
+- Taiwan Semiconductor 25% holding limit room
+- top holdings and overlap with industry themes

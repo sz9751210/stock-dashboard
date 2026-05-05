@@ -305,3 +305,74 @@ export function createAiRankingReport(topics, { mode = "bullish", query = "" } =
     emptyMessage: ranked.length === 0 ? "目前沒有符合條件的 AI 分析結果。" : "",
   };
 }
+
+export function createMarketSnapshot(topics, snapshots) {
+  const snapshotMap = new Map(snapshots.map((snapshot) => [snapshot.ticker, snapshot]));
+
+  return buildCompanyIndex(topics)
+    .filter((company) => snapshotMap.has(company.ticker))
+    .map((company) => {
+      const snapshot = snapshotMap.get(company.ticker);
+      return {
+        ticker: company.ticker,
+        name: company.name,
+        role: company.role,
+        topicTitle: company.topicTitle,
+        lastPrice: snapshot.lastPrice,
+        changePct: snapshot.changePct,
+        volume: snapshot.volume,
+        signal: snapshot.signal,
+      };
+    });
+}
+
+export function createEtfDashboard(etfs, topics) {
+  const companyTopics = new Map();
+  for (const company of buildCompanyIndex(topics)) {
+    const titles = companyTopics.get(company.ticker) ?? new Set();
+    titles.add(company.topicTitle);
+    companyTopics.set(company.ticker, titles);
+  }
+
+  const holdingMap = new Map();
+  for (const etf of etfs) {
+    for (const holding of etf.topHoldings) {
+      const entry = holdingMap.get(holding.ticker) ?? {
+        ticker: holding.ticker,
+        name: holding.name,
+        etfTickers: new Set(),
+        topicTitles: companyTopics.get(holding.ticker) ?? new Set(),
+      };
+      entry.etfTickers.add(etf.ticker);
+      holdingMap.set(holding.ticker, entry);
+    }
+  }
+
+  return {
+    totalAum: Number(etfs.reduce((sum, etf) => sum + etf.aum, 0).toFixed(1)),
+    dailyInflow: Number(
+      etfs.filter((etf) => etf.dailyFlow > 0).reduce((sum, etf) => sum + etf.dailyFlow, 0).toFixed(1),
+    ),
+    dailyOutflow: Number(
+      etfs.filter((etf) => etf.dailyFlow < 0).reduce((sum, etf) => sum + etf.dailyFlow, 0).toFixed(1),
+    ),
+    weeklyFlow: Number(etfs.reduce((sum, etf) => sum + etf.weeklyFlow, 0).toFixed(1)),
+    funds: [...etfs].sort((a, b) => b.aum - a.aum),
+    tsmcLimit: [...etfs]
+      .map((etf) => ({
+        ticker: etf.ticker,
+        name: etf.name,
+        tsmcWeight: etf.tsmcWeight,
+        roomToLimit: Number((25 - etf.tsmcWeight).toFixed(1)),
+      }))
+      .sort((a, b) => a.roomToLimit - b.roomToLimit),
+    holdingOverlap: [...holdingMap.values()]
+      .map((entry) => ({
+        ticker: entry.ticker,
+        name: entry.name,
+        etfCount: entry.etfTickers.size,
+        topicTitles: [...entry.topicTitles],
+      }))
+      .sort((a, b) => b.etfCount - a.etfCount || a.ticker.localeCompare(b.ticker)),
+  };
+}
