@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="AI 產業地圖：用互動卡片、供應鏈關係圖、公司資料庫與熱力圖探索台股 AI 產業鏈。"
+    />
+    <title>AI 產業地圖</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="AI 產業地圖首頁">
+        <span class="brand-mark">AI</span>
+        <span>產業地圖</span>
+      </a>
+      <nav class="nav" aria-label="主要功能">
+        <button class="nav-button active" data-view="themes">題材總覽</button>
+        <button class="nav-button" data-view="map">產業地圖</button>
+        <button class="nav-button" data-view="companies">公司資料庫</button>
+        <button class="nav-button" data-view="heat">熱力圖</button>
+        <button class="nav-button" data-view="analysis">AI 分析</button>
+      </nav>
+    </header>
+
+    <main id="top" class="app-shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">GitHub Pages static research tool</p>
+          <h1>AI 產業地圖</h1>
+          <p class="hero-copy">探索台股 AI 算力、硬體基建、元件材料與企業應用供應鏈。</p>
+        </div>
+        <div class="hero-stats" aria-label="資料概覽">
+          <div>
+            <strong id="topic-count">0</strong>
+            <span>題材</span>
+          </div>
+          <div>
+            <strong id="company-count">0</strong>
+            <span>公司角色</span>
+          </div>
+          <div>
+            <strong id="top-score">0</strong>
+            <span>最高動能</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="controls" aria-label="篩選工具">
+        <label class="search">
+          <span>搜尋</span>
+          <input id="search-input" type="search" placeholder="輸入公司、題材、角色或催化因素" />
+        </label>
+        <div id="category-filters" class="filter-row" aria-label="分類篩選"></div>
+      </section>
+
+      <section id="view-title" class="view-title" aria-live="polite"></section>
+      <section id="content" class="content" aria-live="polite"></section>
+    </main>
+
+    <footer class="footer">
+      <p>資料為示範內容，不構成投資建議。可直接部署到 GitHub Pages。</p>
+    </footer>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
