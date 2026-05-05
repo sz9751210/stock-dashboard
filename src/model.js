@@ -403,6 +403,54 @@ export function createCompanyDatabase(topics, snapshots = []) {
     .sort((a, b) => b.momentumScore - a.momentumScore || a.ticker.localeCompare(b.ticker));
 }
 
+export function createCompanyDetail(topics, snapshots = [], ticker) {
+  const company = createCompanyDatabase(topics, snapshots).find((row) => row.ticker === ticker);
+  if (!company) return null;
+
+  const snapshot = snapshots.find((item) => item.ticker === ticker) ?? null;
+  const topicExposures = buildCompanyIndex(topics)
+    .filter((item) => item.ticker === ticker)
+    .map((item) => {
+      const topic = topics.find((candidate) => candidate.id === item.topicId);
+      return {
+        topicId: item.topicId,
+        topicTitle: item.topicTitle,
+        category: item.category,
+        role: item.role,
+        score: topic?.score ?? 0,
+        catalyst: topic?.catalyst ?? "",
+      };
+    })
+    .sort((a, b) => b.score - a.score || a.topicTitle.localeCompare(b.topicTitle, "zh-Hant"));
+
+  const primaryAnalysis = buildScorecards(topics, "")
+    .filter((card) => card.ticker === ticker)
+    .sort((a, b) => b.totalScore - a.totalScore)[0];
+
+  const exposureTopicIds = new Set(topicExposures.map((item) => item.topicId));
+  const peerMap = new Map();
+  for (const item of buildCompanyIndex(topics)) {
+    if (item.ticker === ticker || !exposureTopicIds.has(item.topicId)) continue;
+    const entry = peerMap.get(item.ticker) ?? {
+      ticker: item.ticker,
+      name: item.name,
+      roles: [],
+      sharedTopics: [],
+    };
+    if (!entry.roles.includes(item.role)) entry.roles.push(item.role);
+    if (!entry.sharedTopics.includes(item.topicTitle)) entry.sharedTopics.push(item.topicTitle);
+    peerMap.set(item.ticker, entry);
+  }
+
+  return {
+    ...company,
+    snapshot,
+    topicExposures,
+    primaryAnalysis,
+    peerCompanies: [...peerMap.values()].slice(0, 6),
+  };
+}
+
 export function createMarketSnapshot(topics, snapshots) {
   const snapshotMap = new Map(snapshots.map((snapshot) => [snapshot.ticker, snapshot]));
 

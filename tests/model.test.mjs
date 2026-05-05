@@ -11,6 +11,7 @@ import {
   createEtfFlowReport,
   createTopicNetwork,
   createCompanyDatabase,
+  createCompanyDetail,
   createMarketSnapshot,
   createTrackedTickers,
   buildHeatMap,
@@ -240,6 +241,27 @@ test("createCompanyDatabase aggregates duplicate companies with topics, roles, a
   assert.equal(row.snapshotStatus, "updated");
   assert.equal(row.lastPrice, 118.5);
   assert.equal(row.momentumScore, 92);
+});
+
+test("createCompanyDetail returns a focused company profile with analysis and peers", () => {
+  const detail = createCompanyDetail(sampleTopics, sampleMarketSnapshots, "3035");
+
+  assert.equal(detail.ticker, "3035");
+  assert.equal(detail.name, "智原");
+  assert.equal(detail.snapshot.lastPrice, 118.5);
+  assert.deepEqual(detail.topicExposures, [
+    {
+      topicId: "asic",
+      topicTitle: "ASIC 設計",
+      category: "半導體鏈",
+      role: "ASIC 設計服務",
+      score: 92,
+      catalyst: "CSP 自研晶片需求升溫",
+    },
+  ]);
+  assert.equal(detail.primaryAnalysis.ticker, "3035");
+  assert.ok(detail.primaryAnalysis.explanation.includes("智原"));
+  assert.deepEqual(detail.peerCompanies.map((company) => company.ticker), ["3443"]);
 });
 
 test("createAiRankingReport adds mode summary, explanations, risk flags, and next checks", () => {

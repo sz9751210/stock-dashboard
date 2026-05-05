@@ -11,6 +11,7 @@ import { addSavedAnalysis, createUserProfile } from "./auth.js";
 import {
   buildCompanyIndex,
   createCompanyDatabase,
+  createCompanyDetail,
   buildHeatMap,
   createAiRankingReport,
   createDailyFocusReport,
@@ -27,13 +28,15 @@ const USER_KEY = "ai-industry-map-user";
 const SAVED_ANALYSES_KEY = "ai-industry-map-saved-analyses";
 const params = new URLSearchParams(window.location.search);
 const requestedTopic = params.get("topic");
+const requestedCompany = params.get("company");
 const initialTopicId = topics.some((topic) => topic.id === requestedTopic) ? requestedTopic : topics[0]?.id;
 
 const state = {
-  view: requestedTopic ? "map" : "themes",
+  view: requestedCompany ? "company" : requestedTopic ? "map" : "themes",
   category: "全部",
   query: "",
   selectedTopicId: initialTopicId ?? "",
+  selectedCompanyTicker: requestedCompany ?? "",
   analysisMode: "bullish",
   mapMode: "relation",
   activeNetworkCluster: "compute",
@@ -122,6 +125,13 @@ function syncNav() {
 
 function setView(view) {
   state.view = view;
+  if (view !== "company") {
+    state.selectedCompanyTicker = "";
+    const url = new URL(window.location.href);
+    url.searchParams.delete("company");
+    if (view !== "map") url.searchParams.delete("topic");
+    if (url.href !== window.location.href) window.history.replaceState({}, "", url);
+  }
   syncNav();
   render();
 }
@@ -482,9 +492,9 @@ function renderCompanies(visibleTopics) {
           ${databaseRows
             .map(
               (company) => `
-                <tr>
+                <tr class="company-row" data-company="${company.ticker}">
                   <td>${company.ticker}</td>
-                  <td>${company.name}</td>
+                  <td><button class="company-link" data-company="${company.ticker}">${company.name}</button></td>
                   <td>${company.roles.join("、")}</td>
                   <td>${company.topicTitles.join("、")}</td>
                   <td>${company.market}</td>
@@ -500,6 +510,129 @@ function renderCompanies(visibleTopics) {
             .join("")}
         </tbody>
       </table>
+    </div>
+  `;
+}
+
+function renderCompanyDetail(visibleTopics) {
+  const detail = createCompanyDetail(topics, marketSnapshots, state.selectedCompanyTicker);
+  viewTitle.innerHTML = `
+    <div>
+      <p class="eyebrow">Company Detail</p>
+      <h2>${detail ? `${detail.ticker} ${detail.name}` : "個股分析"}</h2>
+      <p class="section-copy">整合題材曝險、twstock snapshot、AI 五面向評分與同題材公司。</p>
+    </div>
+  `;
+
+  if (!detail) {
+    content.innerHTML = `
+      <div class="empty-state">
+        <div>
+          <h2>找不到公司資料</h2>
+          <p>請回公司資料庫選擇公司，或調整搜尋條件。</p>
+          <button class="mock-button" data-view-jump="companies">回公司資料庫</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const analysis = detail.primaryAnalysis;
+  const snapshot = detail.snapshot;
+  content.innerHTML = `
+    <div class="company-detail-actions">
+      <button class="mock-button secondary" data-view-jump="companies">← 回公司資料庫</button>
+      <button class="mock-button secondary" data-view-jump="analysis">查看 AI 排行榜</button>
+    </div>
+    <section class="company-profile-hero">
+      <div>
+        <span>${detail.market} · ${detail.categories.join(" / ")}</span>
+        <h3>${detail.ticker} ${detail.name}</h3>
+        <p>${analysis?.explanation ?? "此公司尚無 AI 分析摘要。"}</p>
+      </div>
+      <div class="company-price-card ${snapshot?.changePct >= 0 ? "up" : "down"}">
+        <span>twstock Snapshot</span>
+        <strong>${snapshot ? snapshot.lastPrice : "待更新"}</strong>
+        <small>${snapshot ? `${snapshot.changePct >= 0 ? "+" : ""}${snapshot.changePct}% · ${snapshot.signal}` : "等待 workflow 更新"}</small>
+      </div>
+    </section>
+    <div class="company-detail-grid">
+      <section class="company-detail-panel">
+        <div class="panel-kicker">Topic Exposure</div>
+        <h3>題材曝險</h3>
+        ${detail.topicExposures
+          .map(
+            (item) => `
+              <article class="exposure-row">
+                <div>
+                  <strong>${item.topicTitle}</strong>
+                  <span>${item.category} · ${item.role}</span>
+                  <small>${item.catalyst}</small>
+                </div>
+                <b>${item.score}</b>
+              </article>
+            `,
+          )
+          .join("")}
+      </section>
+      <section class="company-detail-panel">
+        <div class="panel-kicker">AI Analysis</div>
+        <h3>個股 AI 評分</h3>
+        ${
+          analysis
+            ? `
+              <div class="detail-score">
+                <strong>${analysis.totalScore.toFixed(1)}</strong>
+                <span>${analysis.sentiment}</span>
+              </div>
+              <div class="factor-list compact">
+                ${Object.entries(analysis.factors)
+                  .map(
+                    ([label, value]) => `
+                      <div class="factor-row">
+                        <span>${label}</span>
+                        <div class="factor-bar"><i style="width:${value}%"></i></div>
+                        <strong>${value}</strong>
+                      </div>
+                    `,
+                  )
+                  .join("")}
+              </div>
+            `
+            : "<p>尚無分析資料。</p>"
+        }
+      </section>
+      <section class="company-detail-panel">
+        <div class="panel-kicker">Risk Flags</div>
+        <h3>風險旗標</h3>
+        <div class="detail-list">
+          ${(analysis?.riskFlags ?? []).map((item) => `<span>${item}</span>`).join("")}
+        </div>
+      </section>
+      <section class="company-detail-panel">
+        <div class="panel-kicker">Next Checks</div>
+        <h3>下一步檢查</h3>
+        <div class="detail-list">
+          ${(analysis?.nextChecks ?? []).map((item) => `<span>${item}</span>`).join("")}
+        </div>
+      </section>
+      <section class="company-detail-panel wide">
+        <div class="panel-kicker">Peers</div>
+        <h3>同題材公司</h3>
+        <div class="peer-grid">
+          ${detail.peerCompanies
+            .map(
+              (company) => `
+                <button class="peer-card" data-company="${company.ticker}">
+                  <strong>${company.ticker} ${company.name}</strong>
+                  <span>${company.roles.join("、")}</span>
+                  <small>${company.sharedTopics.join("、")}</small>
+                </button>
+              `,
+            )
+            .join("")}
+        </div>
+      </section>
     </div>
   `;
 }
@@ -781,6 +914,7 @@ function renderAiRankings(visibleTopics) {
               <button class="save-analysis" data-save-analysis data-ticker="${item.ticker}" data-name="${item.name}" data-mode="${state.analysisMode}" data-score="${item.totalScore}" data-sentiment="${item.sentiment}" data-topic="${item.topicTitle}">
                 收藏分析
               </button>
+              <button class="view-company" data-company="${item.ticker}">個股分析</button>
               <div class="factor-list">
                 ${Object.entries(item.factors)
                   .map(
@@ -840,6 +974,7 @@ function render() {
   if (state.view === "themes") renderThemes(visibleTopics);
   if (state.view === "map") renderMap(visibleTopics);
   if (state.view === "companies") renderCompanies(visibleTopics);
+  if (state.view === "company") renderCompanyDetail(visibleTopics);
   if (state.view === "etfs") renderEtfs(visibleTopics);
   if (state.view === "heat") renderHeat(visibleTopics);
   if (state.view === "analysis") renderAiRankings(visibleTopics);
@@ -858,6 +993,24 @@ categoryFilters.addEventListener("click", (event) => {
 content.addEventListener("click", (event) => {
   if (event.target.closest("[data-login-open]")) {
     openLoginModal();
+    return;
+  }
+
+  const viewJumpButton = event.target.closest("[data-view-jump]");
+  if (viewJumpButton) {
+    setView(viewJumpButton.dataset.viewJump);
+    return;
+  }
+
+  const companyButton = event.target.closest("[data-company]");
+  if (companyButton) {
+    state.selectedCompanyTicker = companyButton.dataset.company;
+    state.view = "company";
+    const url = new URL(window.location.href);
+    url.searchParams.set("company", state.selectedCompanyTicker);
+    url.searchParams.set("activeTab", "company");
+    window.history.replaceState({}, "", url);
+    render();
     return;
   }
 
