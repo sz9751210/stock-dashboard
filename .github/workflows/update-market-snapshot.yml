@@ -1,0 +1,35 @@
+name: Update twstock snapshot
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 8 * * 1-5"
+
+permissions:
+  contents: write
+
+jobs:
+  update-market-snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install twstock
+        run: python -m pip install --upgrade twstock
+
+      - name: Generate static market snapshot
+        run: |
+          mkdir -p public
+          python scripts/update_twstock_snapshot.py \
+            --output public/market-snapshot.json \
+            3035 3443 3529 3661 3711 3189 3037 2449 3324 3017 2308 2395 3029
+
+      - name: Commit updated snapshot
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update twstock market snapshot"
+          file_pattern: public/market-snapshot.json

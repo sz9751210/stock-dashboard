@@ -3,6 +3,7 @@ import {
   activeEtfs,
   categories,
   etfEdgeMeta,
+  etfFlowEvents,
   marketSnapshots,
   topics,
 } from "./data.js";
@@ -13,6 +14,7 @@ import {
   createAiRankingReport,
   createDailyFocusReport,
   createEtfDashboard,
+  createEtfFlowReport,
   createMarketSnapshot,
   filterCompanies,
   filterTopics,
@@ -412,6 +414,7 @@ function renderHeat(visibleTopics) {
 
 function renderEtfs(visibleTopics) {
   const dashboard = createEtfDashboard(activeEtfs, visibleTopics);
+  const flowReport = createEtfFlowReport(etfFlowEvents, activeEtfs, "2026-05-05");
 
   viewTitle.innerHTML = `
     <div>
@@ -484,6 +487,27 @@ function renderEtfs(visibleTopics) {
         </div>
       </section>
       <section class="etf-panel">
+        <div class="panel-kicker">Daily Flow</div>
+        <h3>每日資金流</h3>
+        <div class="brief-grid">
+          <div><span>加碼</span><strong>${flowReport.addTotal}</strong></div>
+          <div><span>減碼</span><strong>${flowReport.trimTotal}</strong></div>
+          <div><span>事件</span><strong>${flowReport.events.length}</strong></div>
+        </div>
+        ${flowReport.events
+          .slice(0, 6)
+          .map(
+            (event) => `
+              <div class="flow-event">
+                <strong>${event.etfTicker} · ${event.name}</strong>
+                <span class="${event.amount >= 0 ? "up-text" : "down-text"}">${event.amount >= 0 ? "+" : ""}${event.amount} 億</span>
+                <small>${event.shares > 0 ? "+" : ""}${event.shares} 張 · ${event.action === "add" ? "加碼" : "減碼"}</small>
+              </div>
+            `,
+          )
+          .join("")}
+      </section>
+      <section class="etf-panel">
         <div class="panel-kicker">25% Limit</div>
         <h3>台積電上限監控</h3>
         ${dashboard.tsmcLimit
@@ -493,6 +517,21 @@ function renderEtfs(visibleTopics) {
                 <span>${item.ticker}</span>
                 <div class="bar"><i style="width:${item.tsmcWeight * 4}%"></i></div>
                 <strong>${item.roomToLimit}%</strong>
+              </div>
+            `,
+          )
+          .join("")}
+      </section>
+      <section class="etf-panel">
+        <div class="panel-kicker">ETF Subtotal</div>
+        <h3>分 ETF 小計</h3>
+        ${flowReport.byEtf
+          .map(
+            (item) => `
+              <div class="flow-event">
+                <strong>${item.etfTicker}</strong>
+                <span class="${item.netAmount >= 0 ? "up-text" : "down-text"}">${item.netAmount >= 0 ? "+" : ""}${item.netAmount} 億</span>
+                <small>${item.etfName}</small>
               </div>
             `,
           )

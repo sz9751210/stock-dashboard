@@ -308,6 +308,19 @@ export const activeEtfs = [
   },
 ];
 
+export const etfFlowEvents = [
+  { date: "2026-05-05", etfTicker: "00990A", ticker: "3661", name: "世芯-KY", shares: 32, amount: 13.5, action: "add" },
+  { date: "2026-05-05", etfTicker: "00980A", ticker: "3035", name: "智原", shares: 120, amount: 14.2, action: "add" },
+  { date: "2026-05-05", etfTicker: "00980A", ticker: "3017", name: "奇鋐", shares: 18, amount: 12.9, action: "add" },
+  { date: "2026-05-05", etfTicker: "00981A", ticker: "3443", name: "創意", shares: -8, amount: -12.4, action: "trim" },
+  { date: "2026-05-05", etfTicker: "00984A", ticker: "2308", name: "台達電", shares: 28, amount: 11.0, action: "add" },
+  { date: "2026-05-05", etfTicker: "00992A", ticker: "2345", name: "智邦", shares: 20, amount: 9.8, action: "add" },
+  { date: "2026-05-05", etfTicker: "00982A", ticker: "1609", name: "大亞", shares: -80, amount: -4.6, action: "trim" },
+  { date: "2026-05-04", etfTicker: "00980A", ticker: "3324", name: "雙鴻", shares: 55, amount: 15.7, action: "add" },
+  { date: "2026-05-04", etfTicker: "00990A", ticker: "3443", name: "創意", shares: 7, amount: 10.8, action: "add" },
+  { date: "2026-05-04", etfTicker: "00981A", ticker: "3711", name: "日月光投控", shares: -64, amount: -10.6, action: "trim" },
+];
+
 export const etfEdgeMeta = {
   sourceLabel: "ETFEdge",
   asOf: "2026-05-04",

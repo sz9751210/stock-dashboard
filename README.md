@@ -46,6 +46,8 @@ rtk python3 scripts/update_twstock_snapshot.py 2330 2308 3017
 
 The company database displays these rows as `twstock Snapshot` data.
 
+The repository also includes `.github/workflows/update-market-snapshot.yml`, which can be run manually or on the weekday schedule to generate `public/market-snapshot.json` with `twstock` and commit it back to the repository.
+
 ## AI Analysis
 
 The AI analysis tab mirrors the reference site's ranking workflow in static form:

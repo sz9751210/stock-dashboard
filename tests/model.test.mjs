@@ -8,6 +8,7 @@ import {
   createAiRankingReport,
   createEtfDashboard,
   createDailyFocusReport,
+  createEtfFlowReport,
   createMarketSnapshot,
   buildHeatMap,
   createInsights,
@@ -81,6 +82,12 @@ const sampleEtfs = [
     tsmcWeight: 18.4,
     topHoldings: [{ ticker: "3443", name: "創意", weight: 6.8 }],
   },
+];
+
+const sampleEtfFlowEvents = [
+  { date: "2026-05-05", etfTicker: "00980A", ticker: "3035", name: "智原", shares: 120, amount: 14.2, action: "add" },
+  { date: "2026-05-05", etfTicker: "00981A", ticker: "3443", name: "創意", shares: -8, amount: -12.4, action: "trim" },
+  { date: "2026-05-04", etfTicker: "00980A", ticker: "3324", name: "雙鴻", shares: 55, amount: 15.7, action: "add" },
 ];
 
 test("filterTopics returns category matches and search matches", () => {
@@ -247,4 +254,16 @@ test("createDailyFocusReport combines market movers, ETF brief, and risk notes",
   assert.equal(report.etfBrief.totalAum, 5172);
   assert.equal(report.marketMovers[0].ticker, "3035");
   assert.match(report.riskNotes[0], /台積電 25%/);
+});
+
+test("createEtfFlowReport summarizes daily add and trim events", () => {
+  const report = createEtfFlowReport(sampleEtfFlowEvents, sampleEtfs, "2026-05-05");
+
+  assert.equal(report.date, "2026-05-05");
+  assert.equal(report.addTotal, 14.2);
+  assert.equal(report.trimTotal, -12.4);
+  assert.deepEqual(report.byEtf, [
+    { etfTicker: "00980A", etfName: "主動台灣AI", addAmount: 14.2, trimAmount: 0, netAmount: 14.2 },
+    { etfTicker: "00981A", etfName: "主動台灣科技", addAmount: 0, trimAmount: -12.4, netAmount: -12.4 },
+  ]);
 });

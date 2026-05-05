@@ -638,6 +638,19 @@ td {
   margin-top: 0.8rem;
 }
 
+.flow-event {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4.5rem;
+  gap: 0.25rem 0.75rem;
+  border-top: 1px solid rgba(150, 163, 184, 0.12);
+  padding: 0.65rem 0;
+}
+
+.flow-event small {
+  grid-column: 1 / -1;
+  color: var(--muted);
+}
+
 .bar {
   height: 0.5rem;
   border-radius: 999px;

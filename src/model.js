@@ -410,3 +410,51 @@ export function createDailyFocusReport(topics, snapshots, etfs, etfMeta) {
     ],
   };
 }
+
+export function createEtfFlowReport(events, etfs, date) {
+  const etfNameMap = new Map(etfs.map((etf) => [etf.ticker, etf.name]));
+  const filteredEvents = events.filter((event) => event.date === date);
+  const addTotal = Number(
+    filteredEvents
+      .filter((event) => event.amount > 0)
+      .reduce((sum, event) => sum + event.amount, 0)
+      .toFixed(1),
+  );
+  const trimTotal = Number(
+    filteredEvents
+      .filter((event) => event.amount < 0)
+      .reduce((sum, event) => sum + event.amount, 0)
+      .toFixed(1),
+  );
+  const etfMap = new Map();
+
+  for (const event of filteredEvents) {
+    const entry = etfMap.get(event.etfTicker) ?? {
+      etfTicker: event.etfTicker,
+      etfName: etfNameMap.get(event.etfTicker) ?? event.etfTicker,
+      addAmount: 0,
+      trimAmount: 0,
+      netAmount: 0,
+    };
+
+    if (event.amount >= 0) entry.addAmount += event.amount;
+    else entry.trimAmount += event.amount;
+    entry.netAmount += event.amount;
+    etfMap.set(event.etfTicker, entry);
+  }
+
+  const normalize = (entry) => ({
+    ...entry,
+    addAmount: Number(entry.addAmount.toFixed(1)),
+    trimAmount: Number(entry.trimAmount.toFixed(1)),
+    netAmount: Number(entry.netAmount.toFixed(1)),
+  });
+
+  return {
+    date,
+    addTotal,
+    trimTotal,
+    events: filteredEvents.sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount)),
+    byEtf: [...etfMap.values()].map(normalize).sort((a, b) => b.netAmount - a.netAmount),
+  };
+}
