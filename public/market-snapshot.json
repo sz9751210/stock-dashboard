@@ -191,8 +191,8 @@
   {
     "ticker": "3081",
     "lastPrice": 2440.0,
-    "changePct": -7.92,
-    "volume": 2144000,
+    "changePct": 8.69,
+    "volume": 2545000,
     "signal": "twstock 更新"
   },
   {
@@ -219,15 +219,15 @@
   {
     "ticker": "3260",
     "lastPrice": 423.0,
-    "changePct": 4.57,
-    "volume": 12934000,
+    "changePct": 1.68,
+    "volume": 12432000,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3322",
     "lastPrice": 14.85,
-    "changePct": 8.39,
-    "volume": 1013000,
+    "changePct": 1.02,
+    "volume": 776000,
     "signal": "twstock 更新"
   },
   {
@@ -422,8 +422,8 @@
   {
     "ticker": "6690",
     "lastPrice": 179.0,
-    "changePct": 7.83,
-    "volume": 40000,
+    "changePct": 0.56,
+    "volume": 90000,
     "signal": "twstock 更新"
   },
   {
