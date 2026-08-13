@@ -1,450 +1,450 @@
 [
   {
     "ticker": "1519",
-    "lastPrice": 653.0,
-    "changePct": -1.36,
-    "volume": 1012568,
+    "lastPrice": 720.0,
+    "changePct": 0.0,
+    "volume": 1696375,
     "signal": "twstock 更新"
   },
   {
     "ticker": "1560",
-    "lastPrice": 662.0,
-    "changePct": -4.47,
-    "volume": 831704,
+    "lastPrice": 707.0,
+    "changePct": -2.88,
+    "volume": 1454076,
     "signal": "twstock 更新"
   },
   {
     "ticker": "1590",
-    "lastPrice": 1545.0,
-    "changePct": -0.96,
-    "volume": 994886,
+    "lastPrice": 1470.0,
+    "changePct": -7.84,
+    "volume": 1482524,
     "signal": "twstock 更新"
   },
   {
     "ticker": "1609",
-    "lastPrice": 37.05,
-    "changePct": 3.06,
-    "volume": 9364690,
+    "lastPrice": 37.75,
+    "changePct": 0.13,
+    "volume": 4484150,
     "signal": "twstock 更新"
   },
   {
     "ticker": "2049",
-    "lastPrice": 387.0,
-    "changePct": 6.91,
-    "volume": 17347288,
+    "lastPrice": 381.0,
+    "changePct": 3.25,
+    "volume": 13188894,
     "signal": "twstock 更新"
   },
   {
     "ticker": "2303",
-    "lastPrice": 116.0,
-    "changePct": -4.53,
-    "volume": 169352784,
+    "lastPrice": 124.5,
+    "changePct": 1.22,
+    "volume": 201443326,
     "signal": "twstock 更新"
   },
   {
     "ticker": "2308",
-    "lastPrice": 1650.0,
-    "changePct": -1.79,
-    "volume": 10432120,
+    "lastPrice": 1885.0,
+    "changePct": 5.31,
+    "volume": 14453120,
     "signal": "twstock 更新"
   },
   {
     "ticker": "2317",
-    "lastPrice": 260.0,
-    "changePct": -1.7,
-    "volume": 38813488,
+    "lastPrice": 262.0,
+    "changePct": -2.96,
+    "volume": 96829809,
     "signal": "twstock 更新"
   },
   {
     "ticker": "2324",
-    "lastPrice": 36.55,
-    "changePct": -2.01,
-    "volume": 30472602,
+    "lastPrice": 39.3,
+    "changePct": -1.5,
+    "volume": 211415757,
     "signal": "twstock 更新"
   },
   {
     "ticker": "2330",
-    "lastPrice": 2370.0,
-    "changePct": 0.21,
-    "volume": 24414025,
+    "lastPrice": 2435.0,
+    "changePct": 0.83,
+    "volume": 26233385,
     "signal": "twstock 更新"
   },
   {
     "ticker": "2345",
-    "lastPrice": 2215.0,
-    "changePct": -8.09,
-    "volume": 4227407,
+    "lastPrice": 2270.0,
+    "changePct": 2.48,
+    "volume": 3000738,
     "signal": "twstock 更新"
   },
   {
     "ticker": "2353",
-    "lastPrice": 30.25,
-    "changePct": 0.83,
-    "volume": 22172266,
+    "lastPrice": 31.55,
+    "changePct": -0.63,
+    "volume": 26523495,
     "signal": "twstock 更新"
   },
   {
     "ticker": "2356",
-    "lastPrice": 64.0,
-    "changePct": -2.29,
-    "volume": 14275463,
+    "lastPrice": 68.8,
+    "changePct": -0.29,
+    "volume": 72503717,
     "signal": "twstock 更新"
   },
   {
     "ticker": "2357",
-    "lastPrice": 817.0,
-    "changePct": -0.12,
-    "volume": 4616536,
+    "lastPrice": 937.0,
+    "changePct": 9.98,
+    "volume": 3760190,
     "signal": "twstock 更新"
   },
   {
     "ticker": "2359",
-    "lastPrice": 143.5,
-    "changePct": -0.69,
-    "volume": 8863639,
+    "lastPrice": 157.0,
+    "changePct": 9.79,
+    "volume": 13562769,
     "signal": "twstock 更新"
   },
   {
     "ticker": "2382",
-    "lastPrice": 298.0,
-    "changePct": -1.32,
-    "volume": 17516962,
+    "lastPrice": 325.0,
+    "changePct": -0.15,
+    "volume": 19688533,
     "signal": "twstock 更新"
   },
   {
     "ticker": "2395",
-    "lastPrice": 634.0,
-    "changePct": 1.93,
-    "volume": 6309278,
+    "lastPrice": 698.0,
+    "changePct": 1.75,
+    "volume": 4155071,
     "signal": "twstock 更新"
   },
   {
     "ticker": "2409",
-    "lastPrice": 24.55,
-    "changePct": 0.0,
-    "volume": 145598796,
+    "lastPrice": 25.75,
+    "changePct": -1.9,
+    "volume": 128429176,
     "signal": "twstock 更新"
   },
   {
     "ticker": "2449",
-    "lastPrice": 242.0,
-    "changePct": -2.81,
-    "volume": 14953349,
+    "lastPrice": 253.5,
+    "changePct": -2.12,
+    "volume": 27388181,
     "signal": "twstock 更新"
   },
   {
     "ticker": "2454",
-    "lastPrice": 3900.0,
-    "changePct": -0.51,
-    "volume": 6607003,
+    "lastPrice": 4225.0,
+    "changePct": 5.23,
+    "volume": 12263926,
     "signal": "twstock 更新"
   },
   {
     "ticker": "2467",
-    "lastPrice": 500.0,
-    "changePct": -3.66,
-    "volume": 819761,
+    "lastPrice": 548.0,
+    "changePct": -0.72,
+    "volume": 1524156,
     "signal": "twstock 更新"
   },
   {
     "ticker": "2468",
-    "lastPrice": 34.6,
-    "changePct": -0.43,
-    "volume": 171343,
+    "lastPrice": 35.0,
+    "changePct": 0.72,
+    "volume": 165448,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3008",
-    "lastPrice": 4385.0,
-    "changePct": -5.19,
-    "volume": 1666019,
+    "lastPrice": 4660.0,
+    "changePct": 1.64,
+    "volume": 2186337,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3017",
-    "lastPrice": 2785.0,
-    "changePct": -5.27,
-    "volume": 4140360,
+    "lastPrice": 3200.0,
+    "changePct": 9.97,
+    "volume": 10569479,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3029",
-    "lastPrice": 109.5,
-    "changePct": -0.45,
-    "volume": 1676858,
+    "lastPrice": 111.5,
+    "changePct": 2.76,
+    "volume": 2210670,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3035",
-    "lastPrice": 172.0,
-    "changePct": 0.58,
-    "volume": 3306574,
+    "lastPrice": 177.0,
+    "changePct": -1.12,
+    "volume": 4084816,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3037",
-    "lastPrice": 955.0,
-    "changePct": -1.85,
-    "volume": 21596279,
+    "lastPrice": 1000.0,
+    "changePct": 0.0,
+    "volume": 8899504,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3081",
-    "lastPrice": 2305.0,
-    "changePct": -2.95,
-    "volume": 6003000,
+    "lastPrice": 2665.0,
+    "changePct": -2.2,
+    "volume": 1872000,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3131",
-    "lastPrice": 2385.0,
-    "changePct": 0.0,
-    "volume": 910000,
+    "lastPrice": 2635.0,
+    "changePct": 3.13,
+    "volume": 857000,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3189",
-    "lastPrice": 823.0,
-    "changePct": -3.52,
-    "volume": 16107601,
+    "lastPrice": 851.0,
+    "changePct": -0.82,
+    "volume": 4544970,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3231",
-    "lastPrice": 183.5,
-    "changePct": -3.17,
-    "volume": 65415961,
+    "lastPrice": 197.0,
+    "changePct": 1.81,
+    "volume": 72282415,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3260",
-    "lastPrice": 416.0,
-    "changePct": -1.19,
-    "volume": 20172000,
+    "lastPrice": 409.0,
+    "changePct": -0.12,
+    "volume": 8090000,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3322",
-    "lastPrice": 11.25,
-    "changePct": -1.32,
-    "volume": 386000,
+    "lastPrice": 11.6,
+    "changePct": 2.2,
+    "volume": 226000,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3324",
-    "lastPrice": 1015.0,
-    "changePct": -4.25,
-    "volume": 4609000,
+    "lastPrice": 1035.0,
+    "changePct": -1.43,
+    "volume": 4531000,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3406",
-    "lastPrice": 546.0,
-    "changePct": -0.18,
-    "volume": 2810449,
+    "lastPrice": 629.0,
+    "changePct": 8.82,
+    "volume": 6207058,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3443",
-    "lastPrice": 4545.0,
-    "changePct": 1.45,
-    "volume": 1913717,
+    "lastPrice": 5540.0,
+    "changePct": 7.99,
+    "volume": 2994558,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3529",
-    "lastPrice": 2725.0,
-    "changePct": 2.44,
-    "volume": 813000,
+    "lastPrice": 2700.0,
+    "changePct": 1.5,
+    "volume": 1025000,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3533",
-    "lastPrice": 1910.0,
-    "changePct": -3.05,
-    "volume": 906585,
+    "lastPrice": 1810.0,
+    "changePct": -9.95,
+    "volume": 4535415,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3576",
-    "lastPrice": 16.95,
-    "changePct": -2.59,
-    "volume": 7848590,
+    "lastPrice": 17.9,
+    "changePct": 3.47,
+    "volume": 20322406,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3583",
-    "lastPrice": 693.0,
-    "changePct": -5.97,
-    "volume": 1080436,
+    "lastPrice": 719.0,
+    "changePct": -2.04,
+    "volume": 1158994,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3605",
-    "lastPrice": 107.5,
-    "changePct": -0.46,
-    "volume": 11193035,
+    "lastPrice": 132.0,
+    "changePct": 10.0,
+    "volume": 13830861,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3653",
-    "lastPrice": 4380.0,
-    "changePct": -1.57,
-    "volume": 1730866,
+    "lastPrice": 4635.0,
+    "changePct": 3.69,
+    "volume": 985672,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3661",
-    "lastPrice": 3715.0,
-    "changePct": 1.5,
-    "volume": 2277767,
+    "lastPrice": 4190.0,
+    "changePct": 3.33,
+    "volume": 2869332,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3706",
     "lastPrice": 91.7,
-    "changePct": -1.29,
-    "volume": 9729538,
+    "changePct": -0.76,
+    "volume": 9677556,
     "signal": "twstock 更新"
   },
   {
     "ticker": "3711",
-    "lastPrice": 585.0,
-    "changePct": -1.68,
-    "volume": 13050125,
+    "lastPrice": 626.0,
+    "changePct": 0.81,
+    "volume": 19383393,
     "signal": "twstock 更新"
   },
   {
     "ticker": "4721",
-    "lastPrice": 71.7,
-    "changePct": -0.42,
-    "volume": 332000,
+    "lastPrice": 74.3,
+    "changePct": -0.67,
+    "volume": 311000,
     "signal": "twstock 更新"
   },
   {
     "ticker": "4763",
-    "lastPrice": 49.9,
-    "changePct": 0.5,
-    "volume": 13796150,
+    "lastPrice": 51.6,
+    "changePct": -1.9,
+    "volume": 10357351,
     "signal": "twstock 更新"
   },
   {
     "ticker": "4908",
-    "lastPrice": 143.5,
-    "changePct": -8.6,
-    "volume": 3331000,
+    "lastPrice": 160.0,
+    "changePct": -1.54,
+    "volume": 3179000,
     "signal": "twstock 更新"
   },
   {
     "ticker": "4958",
-    "lastPrice": 473.0,
-    "changePct": -1.87,
-    "volume": 33166518,
+    "lastPrice": 477.5,
+    "changePct": 1.27,
+    "volume": 42130871,
     "signal": "twstock 更新"
   },
   {
     "ticker": "6196",
-    "lastPrice": 493.5,
-    "changePct": -2.85,
-    "volume": 1712469,
+    "lastPrice": 511.0,
+    "changePct": 2.4,
+    "volume": 1627939,
     "signal": "twstock 更新"
   },
   {
     "ticker": "6214",
-    "lastPrice": 146.5,
-    "changePct": 0.69,
-    "volume": 1516254,
+    "lastPrice": 156.5,
+    "changePct": 9.82,
+    "volume": 2744322,
     "signal": "twstock 更新"
   },
   {
     "ticker": "6230",
-    "lastPrice": 109.0,
-    "changePct": -1.8,
-    "volume": 71181,
+    "lastPrice": 112.5,
+    "changePct": 3.69,
+    "volume": 215931,
     "signal": "twstock 更新"
   },
   {
     "ticker": "6285",
-    "lastPrice": 233.0,
-    "changePct": -5.67,
-    "volume": 8008461,
+    "lastPrice": 246.5,
+    "changePct": -1.99,
+    "volume": 5811000,
     "signal": "twstock 更新"
   },
   {
     "ticker": "6290",
-    "lastPrice": 202.0,
-    "changePct": -5.61,
-    "volume": 3623000,
+    "lastPrice": 220.5,
+    "changePct": 0.92,
+    "volume": 3469000,
     "signal": "twstock 更新"
   },
   {
     "ticker": "6412",
-    "lastPrice": 78.2,
-    "changePct": -0.89,
-    "volume": 738958,
+    "lastPrice": 79.6,
+    "changePct": -0.25,
+    "volume": 710830,
     "signal": "twstock 更新"
   },
   {
     "ticker": "6414",
-    "lastPrice": 474.0,
-    "changePct": 1.28,
-    "volume": 2327511,
+    "lastPrice": 451.0,
+    "changePct": -0.99,
+    "volume": 2319984,
     "signal": "twstock 更新"
   },
   {
     "ticker": "6443",
-    "lastPrice": 26.0,
-    "changePct": -2.62,
-    "volume": 2511622,
+    "lastPrice": 27.7,
+    "changePct": 3.55,
+    "volume": 6428575,
     "signal": "twstock 更新"
   },
   {
     "ticker": "6488",
-    "lastPrice": 872.0,
-    "changePct": 0.0,
-    "volume": 9568000,
+    "lastPrice": 1025.0,
+    "changePct": 9.86,
+    "volume": 9990000,
     "signal": "twstock 更新"
   },
   {
     "ticker": "6531",
-    "lastPrice": 951.0,
-    "changePct": 5.67,
-    "volume": 2226625,
+    "lastPrice": 865.0,
+    "changePct": -1.48,
+    "volume": 918703,
     "signal": "twstock 更新"
   },
   {
     "ticker": "6669",
-    "lastPrice": 6100.0,
-    "changePct": -2.63,
-    "volume": 1427158,
+    "lastPrice": 6070.0,
+    "changePct": 0.75,
+    "volume": 1340105,
     "signal": "twstock 更新"
   },
   {
     "ticker": "6690",
-    "lastPrice": 164.5,
-    "changePct": -0.3,
-    "volume": 16000,
+    "lastPrice": 168.0,
+    "changePct": 3.07,
+    "volume": 93000,
     "signal": "twstock 更新"
   },
   {
     "ticker": "8099",
-    "lastPrice": 58.1,
-    "changePct": -0.68,
-    "volume": 75000,
+    "lastPrice": 57.9,
+    "changePct": -0.17,
+    "volume": 38000,
     "signal": "twstock 更新"
   },
   {
     "ticker": "8299",
-    "lastPrice": 2020.0,
-    "changePct": -0.25,
-    "volume": 7009000,
+    "lastPrice": 2280.0,
+    "changePct": 3.17,
+    "volume": 7344000,
     "signal": "twstock 更新"
   },
   {
     "ticker": "8454",
-    "lastPrice": 283.5,
-    "changePct": 9.88,
-    "volume": 1055068,
+    "lastPrice": 266.0,
+    "changePct": -0.56,
+    "volume": 538410,
     "signal": "twstock 更新"
   }
 ]
